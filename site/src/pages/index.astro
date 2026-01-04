@@ -1,5 +1,6 @@
 ---
-const target = "/en/";
+const base = import.meta.env.BASE_URL;
+const target = `${base}en/`;
 ---
 
 <!doctype html>
@@ -11,9 +12,9 @@ const target = "/en/";
     <meta name="robots" content="index,follow" />
     <title>Kunal Gehlot</title>
     <link rel="canonical" href={target} />
-    <link rel="alternate" hreflang="en" href="/en/" />
-    <link rel="alternate" hreflang="de" href="/de/" />
-    <link rel="alternate" hreflang="x-default" href="/en/" />
+    <link rel="alternate" hreflang="en" href={target} />
+    <link rel="alternate" hreflang="de" href={`${base}de/`} />
+    <link rel="alternate" hreflang="x-default" href={target} />
   </head>
   <body>
     <p>Redirecting to <a href={target}>English</a>.</p>

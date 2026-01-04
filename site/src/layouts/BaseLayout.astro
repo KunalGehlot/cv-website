@@ -2,19 +2,23 @@
 import "../styles/global.css";
 
 const { title = "Kunal Gehlot", lang = "en" } = Astro.props;
+const base = import.meta.env.BASE_URL;
 const descriptions = {
   en: "I build future ready products and organizations, where engineering, management, and entrepreneurial thinking meet.",
   de: "Ich gestalte zukunftsfähige Produkte und Organisationen, an der Schnittstelle von Engineering, Management und Unternehmertum.",
 };
 const description = descriptions[lang] ?? descriptions.en;
 const path = Astro.url?.pathname ?? "/";
-const isEn = path.startsWith("/en/");
-const isDe = path.startsWith("/de/");
-const altEnPath = isDe ? path.replace(/^\/de\//, "/en/") : "/en/";
-const altDePath = isEn ? path.replace(/^\/en\//, "/de/") : "/de/";
-const canonical = Astro.site ? new URL(path, Astro.site).toString() : undefined;
-const altEn = Astro.site ? new URL(altEnPath, Astro.site).toString() : altEnPath;
-const altDe = Astro.site ? new URL(altDePath, Astro.site).toString() : altDePath;
+const pathWithoutBase = path.startsWith(base) ? `/${path.slice(base.length)}` : path;
+const canonicalPath = `${base}${pathWithoutBase.replace(/^\//, "")}`;
+const isEn = pathWithoutBase.startsWith("/en/");
+const isDe = pathWithoutBase.startsWith("/de/");
+const altEnPath = isEn ? pathWithoutBase : isDe ? pathWithoutBase.replace(/^\/de\//, "/en/") : "/en/";
+const altDePath = isDe ? pathWithoutBase : isEn ? pathWithoutBase.replace(/^\/en\//, "/de/") : "/de/";
+const toUrl = (p) => (Astro.site ? new URL(p, Astro.site).toString() : p);
+const canonical = toUrl(canonicalPath);
+const altEn = toUrl(`${base}${altEnPath.replace(/^\//, "")}`);
+const altDe = toUrl(`${base}${altDePath.replace(/^\//, "")}`);
 const locale = lang === "de" ? "de_DE" : "en_US";
 ---
 
@@ -36,6 +40,7 @@ const locale = lang === "de" ? "de_DE" : "en_US";
     <meta name="twitter:card" content="summary" />
     {canonical ? <meta property="og:url" content={canonical} /> : null}
     {canonical ? <link rel="canonical" href={canonical} /> : null}
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <link rel="alternate" hreflang="en" href={altEn} />
     <link rel="alternate" hreflang="de" href={altDe} />
     <link rel="alternate" hreflang="x-default" href={altEn} />

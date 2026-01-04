@@ -1,6 +1,9 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Header from "../../components/Header.astro";
+
+const base = import.meta.env.BASE_URL;
+const href = (p) => `${base}${p.replace(/^\//, "")}`;
 ---
 
 <BaseLayout title="Kunal Gehlot - Innovation & Digitale Transformation" lang="de">
@@ -19,7 +22,7 @@ import Header from "../../components/Header.astro";
       </p>
 
       <div class="ctaRow">
-        <a class="btn btnPrimary" href="/de/story/">Story</a>
+        <a class="btn btnPrimary" href={href("de/story/")}>Story</a>
         <a class="btn" href="#contact">Kontakt</a>
       </div>
 
@@ -178,13 +181,13 @@ import Header from "../../components/Header.astro";
         </div>
 
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <a class="btn" href="/cv/cv-de.pdf" target="_blank" rel="noopener">In neuem Tab öffnen</a>
-          <a class="btn btnPrimary" href="/cv/cv-de.pdf" download>Herunterladen</a>
+          <a class="btn" href={href("cv/cv-de.pdf")} target="_blank" rel="noopener">In neuem Tab öffnen</a>
+          <a class="btn btnPrimary" href={href("cv/cv-de.pdf")} download>Herunterladen</a>
         </div>
       </div>
 
       <div class="cvFrame">
-        <iframe src="/cv/cv-de.pdf" title="CV PDF"></iframe>
+        <iframe src={`${base}cv/cv-de.pdf`} title="CV PDF"></iframe>
       </div>
     </section>
 
