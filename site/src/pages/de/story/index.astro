@@ -1,0 +1,254 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro"
+import Header from "../../../components/Header.astro"
+
+const MARK = {
+  gdev:    { alt: "Google Developers", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Google%20Developers%20logo.svg" },
+  msft:    { alt: "Microsoft", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Microsoft%20logo%20(2012).svg" },
+  upwork:  { alt: "Upwork", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Upwork-Logo-Black.svg" },
+  munichre:{ alt: "Munich Re", src: "https://commons.wikimedia.org/wiki/Special:FilePath/M%C3%BCnchener%20R%C3%BCck%20logo.svg" },
+  allianz: { alt: "Allianz", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Allianz.svg" },
+  openai:  { alt: "OpenAI", src: "https://commons.wikimedia.org/wiki/Special:FilePath/OpenAI_Logo.svg" },
+  healthvectors: { alt: "Health Vectors", src: "/logos/healthvectors.svg" },
+  rwth:    { alt: "RWTH Aachen", src: "https://commons.wikimedia.org/wiki/Special:FilePath/RWTH%20Logo%203.svg" },
+  infineon:{ alt: "Infineon", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Infineon-Logo.svg" },
+  generali:{ alt: "Generali", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Generali%20wordmark%20logo.svg" },
+  epg:     { alt: "EPG", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Logo%20der%20Ehrhardt%20Partner%20Group.svg" },
+}
+
+const chapters = [
+  {
+    id: "start",
+    rail: "Wo es begann",
+    kicker: "Indien, Informatik, Community",
+    title: "Wo es begann",
+    marks: ["gdev", "msft"],
+    body: [
+      "Ich bin Kunal, ein Techy mit großem Interesse an Innovation, Digitalisierung und IT-Management, das wirklich etwas verändert.",
+      "Im Bachelor in Computer Science Engineering in Indien habe ich nicht nur studiert. Ich habe Communities aufgebaut, Menschen zusammengebracht, Lernziele gesetzt und die Energie hochgehalten.",
+      "Diese Phase hat mich geprägt. Schnell lernen, Systeme bauen, Menschen wachsen sehen, wenn der Rahmen passt."
+    ],
+    milestones: [
+      "Bachelor in Computer Science Engineering",
+      "Führung über studentische Communities und Events",
+      "Große Hackathons, darunter einer mit mehr als 400 Teilnehmenden"
+    ],
+  },
+  {
+    id: "entrepreneurship",
+    rail: "Unternehmertum",
+    kicker: "Freelancing, Software Services, Kundenarbeit",
+    title: "Erste Schritte im Unternehmertum",
+    marks: ["upwork"],
+    body: [
+      "Gleichzeitig wollte ich etwas Eigenes bauen. Also habe ich freiberuflich gearbeitet und Software-Services angeboten.",
+      "Es ging nicht nur um Code. Ich lernte Kundenführung, Requirement-Management und Projektsteuerung in der Realität.",
+      "Die Zusammenarbeit mit einer Agentur hat mich früh in Produkt- und Projektdenken gebracht."
+    ],
+    milestones: [
+      "Freelancing und Software-Services",
+      "Kundenkommunikation und Projektdelivery",
+      "Produkt- und Projekt-Exposure durch Agenturarbeit"
+    ],
+  },
+  {
+    id: "health",
+    rail: "Health-Tech",
+    kicker: "Health Vectors, Data Science Engineering",
+    title: "Health-Tech und Datenarbeit",
+    marks: ["healthvectors", "munichre", "allianz"],
+    body: [
+      "Nach dem Abschluss wechselte ich zu Health Vectors nach Bangalore als Software Engineer im Bereich Data Science.",
+      "Ich baute praktische Systeme, die aus unstrukturierten Inputs nutzbare Ergebnisse machten. Vieles drehte sich darum, medizinische Berichte in saubere Insights zu übersetzen und die Abläufe verlässlich zu machen.",
+      "Ein Teil der Arbeit entstand mit Partnern wie Munich Re und Allianz, außerdem entwickelten wir ein Health-Scoring-System für bessere Underwriting-Entscheidungen."
+    ],
+    milestones: [
+      "Software Engineer Data Science bei Health Vectors",
+      "Daten-Workflows rund um medizinische Berichte und Decision Support",
+      "Health-Scoring-System für Underwriting-Use-Cases"
+    ],
+  },
+  {
+    id: "chatgpt",
+    rail: "Als AI kam",
+    kicker: "ChatGPT änderte den Blick auf die Zukunft",
+    title: "Als ChatGPT auf den Markt kam",
+    marks: ["openai"],
+    body: [
+      "In dieser Zeit kam GPT 3.5, also ChatGPT, auf den Markt.",
+      "Dadurch dachte ich stärker über Innovation, Digitalisierung, Projektmanagement und Geschwindigkeit nach, ohne die Organisation zu überfordern.",
+      "Das Management-Thema wurde für mich genauso spannend wie Engineering."
+    ],
+    milestones: [
+      "Fokuswechsel hin zu Innovation und Digitalisierung",
+      "Mehr Interesse an Prozess-, Projekt- und IT-Management",
+      "Klare Ausrichtung auf Business- und Transformationsthemen"
+    ],
+  },
+  {
+    id: "germany",
+    rail: "Deutschland",
+    kicker: "Deutsch lernen, RWTH Aachen",
+    title: "Deutschland als nächster Schritt",
+    marks: ["rwth"],
+    body: [
+      "Parallel habe ich 2,5 Jahre Deutsch gelernt, weil ich in Deutschland studieren wollte.",
+      "Am Ende ging ich an die RWTH Aachen für den MBA in Digitalization and Industrial Change.",
+      "Das Entrepreneurial Mindset Scholarship war ein starkes Signal, dass der Weg passt."
+    ],
+    milestones: [
+      "2,5 Jahre Deutschlernen neben der Arbeit",
+      "MBA an der RWTH Aachen in Digitalization and Industrial Change",
+      "Entrepreneurial Mindset Scholarship"
+    ],
+  },
+  {
+    id: "mba",
+    rail: "MBA Praxis",
+    kicker: "Strategie, Innovation, Industrie",
+    title: "MBA, aber praktisch",
+    marks: ["rwth"],
+    body: [
+      "An der RWTH vertiefte ich Strategisches Management, Leading Innovation und praxisnahe Strategy Labs.",
+      "Der größte Sprung war, Ideen mit Umsetzung zu verbinden. Nicht nur brainstormen, sondern Wege bauen, die in Organisationen funktionieren.",
+      "Mein Team arbeitete hart und wir erreichten die Bestnote 1,0."
+    ],
+    milestones: [
+      "Fokus auf Strategisches Management und Leading Innovation",
+      "Strategy Labs mit Industrieeinbindung",
+      "Top-Note durch intensive Teamarbeit"
+    ],
+  },
+  {
+    id: "capstone",
+    rail: "Capstone und Thesis",
+    kicker: "Infineon, Abschlusssemester",
+    title: "Capstone und Thesis",
+    marks: ["infineon"],
+    body: [
+      "Das letzte Semester bestand fast nur aus Capstone Project und Master-Thesis. Anspruchsvoll, aber lohnend.",
+      "Der Capstone mit Infineon war eng mit echten Innovationsherausforderungen verknüpft und der Frage, wie man nachhaltig Wert schafft.",
+      "Wir erhielten einen internen Innovationspreis, als wir unsere Arbeit präsentierten, und auch hier gab es eine 1,0."
+    ],
+    milestones: [
+      "Capstone-Projekt mit Infineon",
+      "Innovationspreis für die Teampräsentation",
+      "Klarer Outcome-Fokus und Top-Noten"
+    ],
+  },
+  {
+    id: "generali",
+    rail: "Generali",
+    kicker: "Network Automation, Enterprise-Realität",
+    title: "Innovation im Konzern verstehen",
+    marks: ["generali"],
+    body: [
+      "Während des Masters arbeitete ich Teilzeit als Network Automation Engineer bei Assicurazioni Generali.",
+      "Dort habe ich gesehen, wie Innovation im Konzern funktioniert, wo es hakt und warum Governance wichtig ist, wenn Innovation skalieren soll.",
+      "Diese Erfahrung hat meine Thesis geprägt und das Thema real statt akademisch gemacht."
+    ],
+    milestones: [
+      "Network-Automation in einem Enterprise-Umfeld",
+      "Direkte Einblicke in Innovationshürden auf Konzernebene",
+      "Thesis-Orientierung durch reale Governance-Themen"
+    ],
+  },
+  {
+    id: "now",
+    rail: "Heute",
+    kicker: "EPG und die nächsten Schritte",
+    title: "Wo ich jetzt stehe",
+    marks: ["epg"],
+    body: [
+      "Nach dem Abschluss bin ich als Junior Software Developer bei EPG im PMC eingestiegen.",
+      "Ich bin weiter hungrig auf neue Herausforderungen und schärfe meinen Fokus: Innovation, Digitalisierung und effiziente, zukunftsfähige Organisationen.",
+      "Deshalb visiere ich Rollen im Consulting, Produkt- oder Projektmanagement an, in denen Tech und Business zusammenkommen."
+    ],
+    milestones: [
+      "Junior Software Developer bei EPG im PMC",
+      "Klare Ausrichtung auf Innovation und Digitalisierung",
+      "Zielrollen: Consulting, Product, Projekt- oder Programm-Management"
+    ],
+  },
+]
+---
+
+<BaseLayout title="Meine Story, Kunal Gehlot" lang="de">
+  <Header active="de" langLinks={{ en: "/en/story/", de: "/de/story/" }} />
+
+  <main class="container">
+    <section class="section hero">
+      <div class="kicker">Innovation × Technologie × Unternehmertum</div>
+      <h1>Meine Story</h1>
+      <p>
+        Ich gestalte zukunftsfähige Produkte und Organisationen, an der Schnittstelle von Engineering, Management und
+        Unternehmertum.
+      </p>
+
+      <div class="pull">
+        <strong>Leitgedanke</strong> There is nothing so useless as doing efficiently that which should not be done at all.
+        <div style="margin-top:6px;">Peter F. Drucker</div>
+      </div>
+
+      <div class="ctaRow" style="margin-top:18px;">
+        <a class="btn btnPrimary" href="/de/#contact">Kontakt</a>
+        <a class="btn" href="/de/">Zurück</a>
+      </div>
+    </section>
+
+    <section class="section story">
+      <aside class="rail">
+        <div class="railTitle">Kapitel</div>
+        {chapters.map(c => (
+          <a class="railLink" href={`#${c.id}`} data-rail={c.id}>
+            <span class="railDot"></span>
+            <span>{c.rail}</span>
+          </a>
+        ))}
+      </aside>
+
+      <div>
+        {chapters.map(c => (
+          <section class="chapter" id={c.id} data-chapter>
+            <div class="chapterTop">
+              <div>
+                <div class="chapterKicker">{c.kicker}</div>
+                <h2>{c.title}</h2>
+              </div>
+              <div class="marks" aria-label="Verknüpfte Organisationen">
+                {c.marks.map(key => (
+                  <img class="mark" loading="lazy" src={MARK[key].src} alt={MARK[key].alt} />
+                ))}
+              </div>
+            </div>
+
+            {c.body.map(p => <p>{p}</p>)}
+
+            <ul class="milestones">
+              {c.milestones.map(m => <li>{m}</li>)}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const sections = Array.from(document.querySelectorAll("[data-chapter]"))
+    const railLinks = Array.from(document.querySelectorAll("[data-rail]"))
+
+    const setActive = (id) => {
+      railLinks.forEach(a => a.classList.toggle("active", a.getAttribute("data-rail") === id))
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter(e => e.isIntersecting)
+        .sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0]
+      if (visible) setActive(visible.target.id)
+    }, { rootMargin: "-30% 0px -60% 0px", threshold: [0.2, 0.35, 0.5, 0.65] })
+
+    sections.forEach(s => observer.observe(s))
+    if (sections[0]) setActive(sections[0].id)
+  </script>
+</BaseLayout>

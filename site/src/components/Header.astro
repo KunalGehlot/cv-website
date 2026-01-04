@@ -1,27 +1,28 @@
 ---
-const { active = "en" } = Astro.props;
+const { active = "en", langLinks } = Astro.props;
 const isEN = active === "en";
+const linkEN = langLinks?.en ?? "/en/";
+const linkDE = langLinks?.de ?? "/de/";
+const brandHref = isEN ? "/en/" : "/de/";
 ---
 
 <header>
   <div class="container">
     <div class="nav">
-      <div class="nav-left">Kunal Gehlot</div>
+      <a class="brand" href={brandHref}>Kunal Gehlot</a>
 
-      <div class="nav-right">
-        <a class="badge" href={isEN ? "/de/" : "/en/"}>{isEN ? "DE" : "EN"}</a>
-        <a
-          class="badge"
-          href={isEN ? "/cv/cv-en.pdf" : "/cv/cv-de.pdf"}
-          target="_blank"
-          rel="noopener"
-        >
+      <div class="navRight">
+        <a class="navLink" href={isEN ? "/en/story/" : "/de/story/"}>{isEN ? "Story" : "Story"}</a>
+        <a class="navLink" href={isEN ? "/en/#contact" : "/de/#contact"}>{isEN ? "Contact" : "Kontakt"}</a>
+
+        <div class="langPill">
+          <a href={linkEN} class={isEN ? "active" : ""}>EN</a>
+          <a href={linkDE} class={!isEN ? "active" : ""}>DE</a>
+        </div>
+
+        <a class="btn btnPrimary" href={isEN ? "/cv/cv-en.pdf" : "/cv/cv-de.pdf"} target="_blank" rel="noopener">
           {isEN ? "Download CV" : "CV herunterladen"}
         </a>
-        <a class="badge" href="mailto:kunal.gehlot@rwth-aachen.de">Email</a>
-        <a class="badge" href="https://linkedin.com/in/gehlotk" target="_blank" rel="noopener"
-          >LinkedIn</a
-        >
       </div>
     </div>
   </div>

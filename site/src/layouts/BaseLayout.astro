@@ -2,6 +2,11 @@
 import "../styles/global.css";
 
 const { title = "Kunal Gehlot", lang = "en" } = Astro.props;
+const descriptions = {
+  en: "I build future ready products and organizations, where engineering, management, and entrepreneurial thinking meet.",
+  de: "Ich gestalte zukunftsfähige Produkte und Organisationen, an der Schnittstelle von Engineering, Management und Unternehmertum.",
+};
+const description = descriptions[lang] ?? descriptions.en;
 ---
 
 <!doctype html>
@@ -10,10 +15,7 @@ const { title = "Kunal Gehlot", lang = "en" } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
-    <meta
-      name="description"
-      content="Innovation & Digital Transformation | Product/Project | Consulting"
-    />
+    <meta name="description" content={description} />
   </head>
   <body>
     <slot />

@@ -3,106 +3,199 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Header from "../../components/Header.astro";
 ---
 
-<BaseLayout title="Kunal Gehlot — Innovation & Digitale Transformation" lang="de">
+<BaseLayout title="Kunal Gehlot - Innovation & Digitale Transformation" lang="de">
   <Header active="de" />
 
   <main class="container">
-    <section class="hero">
+    <section class="section hero">
+      <div class="kicker">Innovation × Technologie × Unternehmertum</div>
       <h1>Kunal Gehlot</h1>
       <p>
-        <strong>Innovation & Digitale Transformation</strong> · Produkt-/Projektmanagement · Datengetriebene
-        Beratung
-      </p>
-      <p>
-        Ich verbinde Business und Technologie, um messbare Transformation zu liefern—Automatisierung, Analytics und
-        Innovations-Governance in großen Organisationen.
+        Ich gestalte zukunftsfähige Produkte und Organisationen, an der Schnittstelle von Engineering, Management und
+        Unternehmertum.
       </p>
 
-      <div class="cta-row">
-        <a class="button primary" href="/cv/cv-de.pdf" target="_blank" rel="noopener">CV herunterladen (PDF)</a>
-        <a class="button" href="mailto:kunal.gehlot@rwth-aachen.de">Kontakt</a>
+      <div class="ctaRow">
+        <a class="btn btnPrimary" href="/de/story/">Story</a>
+        <a class="btn" href="#contact">Kontakt</a>
+      </div>
+
+      <div class="highlights">
+        <div class="highlight">
+          <h3>Masterarbeit: Innovations-Governance in MNU</h3>
+          <p>Governance-Ansatz + Kennzahlen zur Innovationssteuerung (Fallstudie: Generali).</p>
+        </div>
+        <div class="highlight">
+          <h3>Transformation & Automatisierung</h3>
+          <p>Automatisierungsinitiativen zur Steigerung von Effizienz und Wirkung.</p>
+        </div>
+        <div class="highlight">
+          <h3>Analytics für Entscheidungen</h3>
+          <p>Data Engineering + Analytics zur Verbesserung von Entscheidungsqualität und Outcomes.</p>
+        </div>
       </div>
     </section>
 
-    <section class="grid-3">
-      <div class="card">
-        <h3>Masterarbeit: Innovations-Governance in MNU</h3>
-        <p>Governance-Ansatz + Kennzahlen zur Innovationssteuerung (Fallstudie: Generali).</p>
+    <section class="section columns">
+      <div>
+        <h2 class="h2">Erfahrung (Kurz)</h2>
+
+        <div class="item">
+          <div class="itemTitle">
+            <strong>Werkstudent - Generali</strong>
+            <span class="meta">Aachen · 2023–heute</span>
+          </div>
+          <div class="meta">Innovations-Governance & Automatisierung</div>
+        </div>
+
+        <div class="item">
+          <div class="itemTitle">
+            <strong>Back-end / Data Engineer - Health Vectors</strong>
+            <span class="meta">2021–2023</span>
+          </div>
+          <div class="meta">Datenpipelines, Analytics, Decision Support</div>
+        </div>
+
+        <div class="item">
+          <div class="itemTitle">
+            <strong>Business Analyst - 3 Edge Technovision</strong>
+            <span class="meta">Früher</span>
+          </div>
+          <div class="meta">Analyse & Stakeholder-Koordination</div>
+        </div>
       </div>
-      <div class="card">
-        <h3>Transformation & Automatisierung</h3>
-        <p>Automatisierungsinitiativen zur Steigerung von Effizienz und Wirkung.</p>
-      </div>
-      <div class="card">
-        <h3>Analytics für Entscheidungen</h3>
-        <p>Data Engineering + Analytics zur Verbesserung von Entscheidungsqualität und Outcomes.</p>
+
+      <div>
+        <h2 class="h2">Skills</h2>
+
+        <div class="item">
+          <div class="itemTitle"><strong>Beratung & Transformation</strong></div>
+          <div class="meta">Stakeholder, Requirements, KPI/OKR-Denken</div>
+        </div>
+
+        <div class="item">
+          <div class="itemTitle"><strong>Produkt / Projekt</strong></div>
+          <div class="meta">Delivery, Priorisierung, Agile Basics</div>
+        </div>
+
+        <div class="item">
+          <div class="itemTitle"><strong>Data & Automation</strong></div>
+          <div class="meta">Python, SQL, Automatisierung, Analytics</div>
+        </div>
+
+        <div class="item">
+          <div class="itemTitle"><strong>Tools</strong></div>
+          <div class="meta">Azure, Git, Docker, Tableau</div>
+        </div>
+
+        <h2 class="h2" style="margin-top:28px;">Ausbildung</h2>
+
+        <div class="item">
+          <div class="itemTitle">
+            <strong>MBA - RWTH Aachen</strong>
+            <span class="meta">2023–2025</span>
+          </div>
+          <div class="meta">Digitalization & Industrial Change</div>
+        </div>
+
+        <div class="item">
+          <div class="itemTitle">
+            <strong>B.Tech - Informatik</strong>
+            <span class="meta">2017–2021</span>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="section kv">
-      <div>
-        <h2>Erfahrung (Kurz)</h2>
-        <div class="list">
-          <div class="item">
-            <div><strong>Werkstudent — Generali</strong></div>
-            <div class="meta">Aachen · 2023–heute</div>
-            <div class="meta">Innovations-Governance & Automatisierung</div>
+    <section class="section" id="books">
+      <div class="cvTop">
+        <div>
+          <h2 class="h2" style="margin:0;">Bücher, die ich empfehle</h2>
+          <div class="meta">
+            Frameworks, auf die ich für Innovation, Product Thinking und Geschäftsmodelle setze.
+            <a class="navLink" href="https://www.goodreads.com/user/show/186180596-kunal-gehlot" target="_blank" rel="noopener"
+              >Goodreads</a
+            >
           </div>
-          <div class="item">
-            <div><strong>Back-end / Data Engineer — Health Vectors</strong></div>
-            <div class="meta">2021–2023</div>
-            <div class="meta">Datenpipelines, Analytics, Decision Support</div>
-          </div>
-          <div class="item">
-            <div><strong>Business Analyst — 3 Edge Technovision</strong></div>
-            <div class="meta">Früher</div>
-            <div class="meta">Analyse & Stakeholder-Koordination</div>
-          </div>
+          <div class="meta bookNote">Notiz: kurze Begründung, warum diese Bücher wichtig sind (bitte anpassen).</div>
         </div>
       </div>
 
-      <div>
-        <h2>Skills</h2>
-        <div class="list">
-          <div class="item">
-            <strong>Beratung & Transformation</strong><div class="meta">Stakeholder, Requirements, KPI/OKR-Denken</div>
-          </div>
-          <div class="item"><strong>Produkt / Projekt</strong><div class="meta">Delivery, Priorisierung, Agile Basics</div></div>
-          <div class="item"><strong>Data & Automation</strong><div class="meta">Python, SQL, Automatisierung, Analytics</div></div>
-          <div class="item"><strong>Tools</strong><div class="meta">Azure, Git, Docker, Tableau</div></div>
-        </div>
+      <div class="booksGrid">
+        <a class="book" href="https://www.goodreads.com/book/show/25814544-sprint" target="_blank" rel="noopener">
+          <img
+            class="bookCover"
+            src="https://covers.openlibrary.org/b/isbn/150112174X-L.jpg"
+            alt="Sprint cover"
+            loading="lazy"
+          />
+          <div class="bookTitle">Sprint</div>
+          <div class="bookMeta">Jake Knapp · Rapid problem-solving</div>
+        </a>
 
-        <div class="section">
-          <h2>Ausbildung</h2>
-          <div class="list">
-            <div class="item">
-              <strong>MBA — Digitalization & Industrial Change (RWTH Aachen)</strong><div class="meta">2023–2025</div>
-            </div>
-            <div class="item"><strong>B.Tech — Informatik</strong><div class="meta">2017–2021</div></div>
-          </div>
-        </div>
+        <a class="book" href="https://www.goodreads.com/book/show/10127019-the-lean-startup" target="_blank" rel="noopener">
+          <img
+            class="bookCover"
+            src="https://covers.openlibrary.org/b/isbn/0307887898-L.jpg"
+            alt="The Lean Startup cover"
+            loading="lazy"
+          />
+          <div class="bookTitle">The Lean Startup</div>
+          <div class="bookMeta">Eric Ries · Experimentation & iteration</div>
+        </a>
+
+        <a
+          class="book"
+          href="https://www.goodreads.com/book/show/22776635-the-business-model-navigator"
+          target="_blank"
+          rel="noopener"
+        >
+          <img
+            class="bookCover"
+            src="https://covers.openlibrary.org/b/isbn/1292065834-L.jpg"
+            alt="The Business Model Navigator cover"
+            loading="lazy"
+          />
+          <div class="bookTitle">The Business Model Navigator</div>
+          <div class="bookMeta">Gassmann et al. · Business model patterns</div>
+        </a>
       </div>
     </section>
 
     <section class="section">
-      <h2>Lebenslauf (PDF)</h2>
-      <p>
-        <a href="/cv/cv-de.pdf" target="_blank" rel="noopener">In neuem Tab öffnen</a> ·
-        <a href="/cv/cv-de.pdf" download>Herunterladen</a>
-      </p>
+      <div class="cvTop">
+        <div>
+          <h2 class="h2" style="margin:0;">Lebenslauf</h2>
+          <div class="meta">Alle Details als PDF</div>
+        </div>
 
-      <div class="pdfbox">
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="btn" href="/cv/cv-de.pdf" target="_blank" rel="noopener">In neuem Tab öffnen</a>
+          <a class="btn btnPrimary" href="/cv/cv-de.pdf" download>Herunterladen</a>
+        </div>
+      </div>
+
+      <div class="cvFrame">
         <iframe src="/cv/cv-de.pdf" title="CV PDF"></iframe>
+      </div>
+    </section>
+
+    <section class="section" id="contact">
+      <h2 class="h2">Kontakt</h2>
+      <div class="meta">Beste Wege, mich zu erreichen.</div>
+
+      <div class="contactRow">
+        <a class="btn btnPrimary" href="tel:+491631838202">Anrufen</a>
+        <a class="btn" href="https://wa.me/491631838202" target="_blank" rel="noopener">WhatsApp</a>
+        <a class="btn" href="mailto:kunal.gehlot@rwth-aachen.de">E-Mail</a>
+        <a class="btn" href="https://linkedin.com/in/gehlotk" target="_blank" rel="noopener">Nachricht auf LinkedIn</a>
       </div>
     </section>
   </main>
 
   <footer>
     <div class="container">
-      <div>
-        © {new Date().getFullYear()} Kunal Gehlot · <a href="/impressum/">Impressum</a> ·
-        <a href="/datenschutz/">Datenschutz</a>
-      </div>
+      © {new Date().getFullYear()} Kunal Gehlot · <a class="navLink" href="/impressum/">Impressum</a> · <a class="navLink" href="/datenschutz/">Datenschutz</a>
     </div>
   </footer>
 </BaseLayout>
