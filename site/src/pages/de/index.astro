@@ -1,0 +1,108 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+---
+
+<BaseLayout title="Kunal Gehlot — Innovation & Digitale Transformation" lang="de">
+  <Header active="de" />
+
+  <main class="container">
+    <section class="hero">
+      <h1>Kunal Gehlot</h1>
+      <p>
+        <strong>Innovation & Digitale Transformation</strong> · Produkt-/Projektmanagement · Datengetriebene
+        Beratung
+      </p>
+      <p>
+        Ich verbinde Business und Technologie, um messbare Transformation zu liefern—Automatisierung, Analytics und
+        Innovations-Governance in großen Organisationen.
+      </p>
+
+      <div class="cta-row">
+        <a class="button primary" href="/cv/cv-de.pdf" target="_blank" rel="noopener">CV herunterladen (PDF)</a>
+        <a class="button" href="mailto:kunal.gehlot@rwth-aachen.de">Kontakt</a>
+      </div>
+    </section>
+
+    <section class="grid-3">
+      <div class="card">
+        <h3>Masterarbeit: Innovations-Governance in MNU</h3>
+        <p>Governance-Ansatz + Kennzahlen zur Innovationssteuerung (Fallstudie: Generali).</p>
+      </div>
+      <div class="card">
+        <h3>Transformation & Automatisierung</h3>
+        <p>Automatisierungsinitiativen zur Steigerung von Effizienz und Wirkung.</p>
+      </div>
+      <div class="card">
+        <h3>Analytics für Entscheidungen</h3>
+        <p>Data Engineering + Analytics zur Verbesserung von Entscheidungsqualität und Outcomes.</p>
+      </div>
+    </section>
+
+    <section class="section kv">
+      <div>
+        <h2>Erfahrung (Kurz)</h2>
+        <div class="list">
+          <div class="item">
+            <div><strong>Werkstudent — Generali</strong></div>
+            <div class="meta">Aachen · 2023–heute</div>
+            <div class="meta">Innovations-Governance & Automatisierung</div>
+          </div>
+          <div class="item">
+            <div><strong>Back-end / Data Engineer — Health Vectors</strong></div>
+            <div class="meta">2021–2023</div>
+            <div class="meta">Datenpipelines, Analytics, Decision Support</div>
+          </div>
+          <div class="item">
+            <div><strong>Business Analyst — 3 Edge Technovision</strong></div>
+            <div class="meta">Früher</div>
+            <div class="meta">Analyse & Stakeholder-Koordination</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Skills</h2>
+        <div class="list">
+          <div class="item">
+            <strong>Beratung & Transformation</strong><div class="meta">Stakeholder, Requirements, KPI/OKR-Denken</div>
+          </div>
+          <div class="item"><strong>Produkt / Projekt</strong><div class="meta">Delivery, Priorisierung, Agile Basics</div></div>
+          <div class="item"><strong>Data & Automation</strong><div class="meta">Python, SQL, Automatisierung, Analytics</div></div>
+          <div class="item"><strong>Tools</strong><div class="meta">Azure, Git, Docker, Tableau</div></div>
+        </div>
+
+        <div class="section">
+          <h2>Ausbildung</h2>
+          <div class="list">
+            <div class="item">
+              <strong>MBA — Digitalization & Industrial Change (RWTH Aachen)</strong><div class="meta">2023–2025</div>
+            </div>
+            <div class="item"><strong>B.Tech — Informatik</strong><div class="meta">2017–2021</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Lebenslauf (PDF)</h2>
+      <p>
+        <a href="/cv/cv-de.pdf" target="_blank" rel="noopener">In neuem Tab öffnen</a> ·
+        <a href="/cv/cv-de.pdf" download>Herunterladen</a>
+      </p>
+
+      <div class="pdfbox">
+        <iframe src="/cv/cv-de.pdf" title="CV PDF"></iframe>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div>
+        © {new Date().getFullYear()} Kunal Gehlot · <a href="/impressum/">Impressum</a> ·
+        <a href="/datenschutz/">Datenschutz</a>
+      </div>
+    </div>
+  </footer>
+</BaseLayout>

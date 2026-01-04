@@ -1,0 +1,28 @@
+---
+const { active = "en" } = Astro.props;
+const isEN = active === "en";
+---
+
+<header>
+  <div class="container">
+    <div class="nav">
+      <div class="nav-left">Kunal Gehlot</div>
+
+      <div class="nav-right">
+        <a class="badge" href={isEN ? "/de/" : "/en/"}>{isEN ? "DE" : "EN"}</a>
+        <a
+          class="badge"
+          href={isEN ? "/cv/cv-en.pdf" : "/cv/cv-de.pdf"}
+          target="_blank"
+          rel="noopener"
+        >
+          {isEN ? "Download CV" : "CV herunterladen"}
+        </a>
+        <a class="badge" href="mailto:kunal.gehlot@rwth-aachen.de">Email</a>
+        <a class="badge" href="https://linkedin.com/in/gehlotk" target="_blank" rel="noopener"
+          >LinkedIn</a
+        >
+      </div>
+    </div>
+  </div>
+</header>
