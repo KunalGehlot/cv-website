@@ -200,6 +200,22 @@ main{ padding: 64px 0 90px; }
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
+.nameRow{
+  display:flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.pronouns{
+  font-size: 14px;
+  color: var(--muted);
+  letter-spacing: -0.01em;
+  border-bottom: 1px dotted rgba(59,86,74,0.35);
+}
+.pronouns:hover{
+  color: var(--text);
+  border-bottom-color: rgba(59,86,74,0.6);
+}
 
 .hero h1{
   margin: 10px 0 10px;
