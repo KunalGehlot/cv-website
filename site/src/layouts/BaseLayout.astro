@@ -7,6 +7,15 @@ const descriptions = {
   de: "Ich gestalte zukunftsfähige Produkte und Organisationen, an der Schnittstelle von Engineering, Management und Unternehmertum.",
 };
 const description = descriptions[lang] ?? descriptions.en;
+const path = Astro.url?.pathname ?? "/";
+const isEn = path.startsWith("/en/");
+const isDe = path.startsWith("/de/");
+const altEnPath = isDe ? path.replace(/^\/de\//, "/en/") : "/en/";
+const altDePath = isEn ? path.replace(/^\/en\//, "/de/") : "/de/";
+const canonical = Astro.site ? new URL(path, Astro.site).toString() : undefined;
+const altEn = Astro.site ? new URL(altEnPath, Astro.site).toString() : altEnPath;
+const altDe = Astro.site ? new URL(altDePath, Astro.site).toString() : altDePath;
+const locale = lang === "de" ? "de_DE" : "en_US";
 ---
 
 <!doctype html>
@@ -16,6 +25,20 @@ const description = descriptions[lang] ?? descriptions.en;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
+    <meta name="googlebot" content="index,follow" />
+    <meta name="author" content="Kunal Gehlot" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={locale} />
+    <meta property="og:site_name" content="Kunal Gehlot" />
+    <meta name="twitter:card" content="summary" />
+    {canonical ? <meta property="og:url" content={canonical} /> : null}
+    {canonical ? <link rel="canonical" href={canonical} /> : null}
+    <link rel="alternate" hreflang="en" href={altEn} />
+    <link rel="alternate" hreflang="de" href={altDe} />
+    <link rel="alternate" hreflang="x-default" href={altEn} />
   </head>
   <body>
     <slot />

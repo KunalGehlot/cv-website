@@ -13,16 +13,18 @@ const MARK = {
   epg: { alt: "EPG", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Logo%20der%20Ehrhardt%20Partner%20Group.svg" },
 }
 
+const markClass = (key) => (key === "generali" ? "mark" : "mark markLg")
+
 const chapters = [
   {
     id: "start",
-    kicker: "India and a computer science foundation with community building",
     title: "Where it started",
+    location: { label: "Jodhpur, India", href: "https://en.wikipedia.org/wiki/Jodhpur" },
     marks: ["gdev", "msft"],
     body: [
       "I am Kunal. I care about innovation, digitalization, and IT management that changes how organizations operate.",
       "My journey began in India during my Bachelor’s in Computer Science Engineering. I was not just studying. I was building communities, bringing people together, setting learning goals, and keeping the energy alive.",
-      "That phase made me who I am. I love learning fast, I love building systems, and I love seeing people grow when you give them the right environment."
+      "That early phase shaped how I work today. I learn fast, build systems, and focus on creating environments where people grow."
     ],
     milestones: [
       "Bachelor’s in Computer Science Engineering",
@@ -31,8 +33,20 @@ const chapters = [
     ],
   },
   {
+    id: "school",
+    title: "School years in Jodhpur",
+    marks: [],
+    body: [
+      "I studied at Delhi Public School in Jodhpur. It gave me structure, discipline, and a strong academic base.",
+      "It was also where I began balancing academics with leadership and extracurricular work."
+    ],
+    milestones: [
+      "Schooling at Delhi Public School, Jodhpur",
+      "Early focus on leadership and structured learning"
+    ],
+  },
+  {
     id: "entrepreneurship",
-    kicker: "Freelancing, software services, client work",
     title: "Getting my hands dirty with entrepreneurship",
     marks: ["upwork"],
     body: [
@@ -48,13 +62,13 @@ const chapters = [
   },
   {
     id: "health",
-    kicker: "Health Vectors, data science engineering",
     title: "Health tech and data work",
+    location: { label: "Bangalore, India", href: "https://en.wikipedia.org/wiki/Bangalore" },
     marks: ["healthvectors"],
     body: [
       "After graduating, I joined Health Vectors in Bangalore as a Software Engineer in Data Science.",
       "I built systems that turned messy medical reports into structured insights and reliable workflows.",
-      "We also developed a health scoring system to improve underwriting decisions and worked with partners like Munich Re and Allianz."
+      "We also developed a health scoring system to improve underwriting decisions."
     ],
     milestones: [
       "Software Engineer in Data Science at Health Vectors",
@@ -64,7 +78,6 @@ const chapters = [
   },
   {
     id: "chatgpt",
-    kicker: "ChatGPT changed how I saw the future",
     title: "When AI shifted the lens",
     marks: [],
     body: [
@@ -80,39 +93,22 @@ const chapters = [
   },
   {
     id: "germany",
-    kicker: "Learning German and moving to RWTH Aachen",
-    title: "Chasing Germany and leveling up",
+    title: "Germany and the MBA chapter",
+    location: { label: "Aachen, Germany", href: "https://en.wikipedia.org/wiki/Aachen" },
     marks: ["rwth"],
     body: [
       "I learned German for 2.5 years while working because I wanted to study in Germany.",
-      "Eventually I moved to RWTH Aachen for my MBA in Digitalization and Industrial Change.",
-      "I received the Entrepreneurial Mindset Scholarship, which confirmed I was on the right path."
+      "I moved to RWTH Aachen for my MBA in Digitalization and Industrial Change and received the Entrepreneurial Mindset Scholarship.",
+      "At RWTH I immersed myself in strategy, innovation, and industry labs with a strong focus on execution."
     ],
     milestones: [
-      "Learned German for 2.5 years while working",
       "MBA at RWTH Aachen in Digitalization and Industrial Change",
-      "Entrepreneurial Mindset Scholarship"
-    ],
-  },
-  {
-    id: "mba",
-    kicker: "Strategy, innovation, and industry work",
-    title: "MBA, but practical",
-    marks: ["rwth"],
-    body: [
-      "At RWTH, I immersed myself in Strategic Management, Leading Innovation, and strategy labs with industry exposure.",
-      "The focus was execution, not just ideas. We mapped customer journeys, tested solutions, and built go to market paths.",
-      "My team and I earned the top grade, 1.0, for the work."
-    ],
-    milestones: [
-      "Strategic Management and Leading Innovation focus",
-      "Strategy labs with industry involvement",
-      "Top grade outcomes through intensive team delivery"
+      "Entrepreneurial Mindset Scholarship",
+      "Strategy labs with industry involvement and top grade outcomes"
     ],
   },
   {
     id: "capstone",
-    kicker: "Infineon and the final semester",
     title: "Capstone and thesis",
     marks: ["infineon"],
     body: [
@@ -128,7 +124,6 @@ const chapters = [
   },
   {
     id: "generali",
-    kicker: "Network automation and enterprise reality",
     title: "Seeing enterprise innovation up close",
     marks: ["generali"],
     body: [
@@ -144,8 +139,8 @@ const chapters = [
   },
   {
     id: "now",
-    kicker: "EPG and the next chapter",
     title: "Where I am now",
+    location: { label: "Alzenau, Germany", href: "https://en.wikipedia.org/wiki/Alzenau" },
     marks: ["epg"],
     body: [
       "After graduating, I joined EPG as a Junior Software Developer.",
@@ -188,8 +183,12 @@ const chapters = [
       {chapters.map(c => (
         <section class="chapter" id={c.id}>
           <div class="chapterHeader">
-            <div class="chapterKicker">{c.kicker}</div>
             <h2>{c.title}</h2>
+            {c.location ? (
+              <div class="chapterLocation">
+                <a href={c.location.href} target="_blank" rel="noopener">{c.location.label}</a>
+              </div>
+            ) : null}
           </div>
 
           {c.body.map(p => <p>{p}</p>)}
@@ -201,7 +200,7 @@ const chapters = [
           {c.marks.length ? (
             <div class="chapterMarks" aria-label="Related organizations">
               {c.marks.map(key => (
-                <img class="mark" loading="lazy" src={MARK[key].src} alt={MARK[key].alt} />
+                <img class={markClass(key)} loading="lazy" src={MARK[key].src} alt={MARK[key].alt} />
               ))}
             </div>
           ) : null}
