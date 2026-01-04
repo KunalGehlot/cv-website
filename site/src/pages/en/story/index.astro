@@ -3,28 +3,24 @@ import BaseLayout from "../../../layouts/BaseLayout.astro"
 import Header from "../../../components/Header.astro"
 
 const MARK = {
-  gdev:    { alt: "Google Developers", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Google%20Developers%20logo.svg" },
-  msft:    { alt: "Microsoft", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Microsoft%20logo%20(2012).svg" },
-  upwork:  { alt: "Upwork", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Upwork-Logo-Black.svg" },
-  munichre:{ alt: "Munich Re", src: "https://commons.wikimedia.org/wiki/Special:FilePath/M%C3%BCnchener%20R%C3%BCck%20logo.svg" },
-  allianz: { alt: "Allianz", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Allianz.svg" },
-  openai:  { alt: "OpenAI", src: "https://commons.wikimedia.org/wiki/Special:FilePath/OpenAI_Logo.svg" },
+  gdev: { alt: "Google Developers", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Google%20Developers%20logo.svg" },
+  msft: { alt: "Microsoft", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Microsoft%20logo%20(2012).svg" },
+  upwork: { alt: "Upwork", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Upwork-Logo-Black.svg" },
   healthvectors: { alt: "Health Vectors", src: "/logos/healthvectors.svg" },
-  rwth:    { alt: "RWTH Aachen", src: "https://commons.wikimedia.org/wiki/Special:FilePath/RWTH%20Logo%203.svg" },
-  infineon:{ alt: "Infineon", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Infineon-Logo.svg" },
-  generali:{ alt: "Generali", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Generali%20wordmark%20logo.svg" },
-  epg:     { alt: "EPG", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Logo%20der%20Ehrhardt%20Partner%20Group.svg" },
+  rwth: { alt: "RWTH Aachen", src: "https://commons.wikimedia.org/wiki/Special:FilePath/RWTH%20Logo%203.svg" },
+  infineon: { alt: "Infineon", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Infineon-Logo.svg" },
+  generali: { alt: "Generali", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Generali%20wordmark%20logo.svg" },
+  epg: { alt: "EPG", src: "https://commons.wikimedia.org/wiki/Special:FilePath/Logo%20der%20Ehrhardt%20Partner%20Group.svg" },
 }
 
 const chapters = [
   {
     id: "start",
-    rail: "Where it started",
-    kicker: "India, computer science, community building",
+    kicker: "India and a computer science foundation with community building",
     title: "Where it started",
     marks: ["gdev", "msft"],
     body: [
-      "I am Kunal, a techy who is really into innovation, digitalization, and IT management that actually changes things.",
+      "I am Kunal. I care about innovation, digitalization, and IT management that changes how organizations operate.",
       "My journey began in India during my Bachelor’s in Computer Science Engineering. I was not just studying. I was building communities, bringing people together, setting learning goals, and keeping the energy alive.",
       "That phase made me who I am. I love learning fast, I love building systems, and I love seeing people grow when you give them the right environment."
     ],
@@ -36,14 +32,13 @@ const chapters = [
   },
   {
     id: "entrepreneurship",
-    rail: "Entrepreneurship",
     kicker: "Freelancing, software services, client work",
     title: "Getting my hands dirty with entrepreneurship",
     marks: ["upwork"],
     body: [
-      "At the same time, I had that constant hunger to build something of my own. So I started freelancing and doing software services.",
-      "It was not only about writing code. I learned client management, requirements management, and how to run projects in the real world.",
-      "Working closely with a development agency also pushed me into product and project management thinking early on."
+      "Alongside my studies, I wanted to build something of my own. I started freelancing and delivering software services.",
+      "It was not only about code. I learned client management, requirements, and how to run projects in the real world.",
+      "Working with a development agency pushed me toward product and project management thinking early."
     ],
     milestones: [
       "Freelancing and software services",
@@ -53,48 +48,45 @@ const chapters = [
   },
   {
     id: "health",
-    rail: "Health tech work",
     kicker: "Health Vectors, data science engineering",
     title: "Health tech and data work",
-    marks: ["healthvectors", "munichre", "allianz"],
+    marks: ["healthvectors"],
     body: [
-      "After graduating, I moved into a Software Engineer role in Data Science at Health Vectors, a health tech startup in Bangalore.",
-      "I worked on building practical systems that turned messy inputs into something usable. A lot of it was about extracting structured insights from medical reports and making the workflow smoother and more reliable.",
-      "Some of this work was in collaboration with partners like Munich Re and Allianz, and we also built a health scoring system aimed at improving underwriting decisions."
+      "After graduating, I joined Health Vectors in Bangalore as a Software Engineer in Data Science.",
+      "I built systems that turned messy medical reports into structured insights and reliable workflows.",
+      "We also developed a health scoring system to improve underwriting decisions and worked with partners like Munich Re and Allianz."
     ],
     milestones: [
       "Software Engineer in Data Science at Health Vectors",
-      "Data workflows built around medical reports and decision support",
-      "Health scoring system connected to underwriting use cases"
+      "Data workflows around medical reports and decision support",
+      "Health scoring system linked to underwriting use cases"
     ],
   },
   {
     id: "chatgpt",
-    rail: "When AI hit",
     kicker: "ChatGPT changed how I saw the future",
-    title: "When ChatGPT hit the market",
-    marks: ["openai"],
+    title: "When AI shifted the lens",
+    marks: [],
     body: [
-      "During this time, a revolutionary technology hit the market. GPT 3.5, also known as ChatGPT.",
-      "It pushed me to zoom out. I started thinking more about innovation, digitalization, project management, and how organizations can move faster without breaking everything.",
-      "That is where the management side became just as exciting as the engineering side."
+      "When GPT 3.5 launched, it shifted how I thought about what teams could deliver.",
+      "I started focusing more on innovation, digitalization, and how organizations can move faster without chaos.",
+      "That is when management became as exciting as engineering."
     ],
     milestones: [
-      "Shift towards innovation and digitalization thinking",
+      "Shift toward innovation and digitalization thinking",
       "More focus on process, project, and IT management",
-      "Clearer direction towards business and transformation roles"
+      "Clearer direction toward business and transformation roles"
     ],
   },
   {
     id: "germany",
-    rail: "Germany chapter",
     kicker: "Learning German and moving to RWTH Aachen",
     title: "Chasing Germany and leveling up",
     marks: ["rwth"],
     body: [
-      "While working, I was also determined to follow my dream of studying in Germany. I learned German for 2.5 years alongside everything else.",
+      "I learned German for 2.5 years while working because I wanted to study in Germany.",
       "Eventually I moved to RWTH Aachen for my MBA in Digitalization and Industrial Change.",
-      "I also received the Entrepreneurial Mindset Scholarship, which felt like a strong signal that I was on the right path."
+      "I received the Entrepreneurial Mindset Scholarship, which confirmed I was on the right path."
     ],
     milestones: [
       "Learned German for 2.5 years while working",
@@ -104,14 +96,13 @@ const chapters = [
   },
   {
     id: "mba",
-    rail: "MBA deep dive",
-    kicker: "Strategy, innovation, and real industry work",
+    kicker: "Strategy, innovation, and industry work",
     title: "MBA, but practical",
     marks: ["rwth"],
     body: [
-      "At RWTH, I immersed myself in Strategic Management, Leading Innovation, and strategy labs with strong industry exposure.",
-      "The biggest shift for me was learning how to connect ideas to execution. Not just brainstorming, but actually building a path that works inside real organizations.",
-      "My team and I put in serious work and we ended up with the highest grade, a 1.0."
+      "At RWTH, I immersed myself in Strategic Management, Leading Innovation, and strategy labs with industry exposure.",
+      "The focus was execution, not just ideas. We mapped customer journeys, tested solutions, and built go to market paths.",
+      "My team and I earned the top grade, 1.0, for the work."
     ],
     milestones: [
       "Strategic Management and Leading Innovation focus",
@@ -121,14 +112,13 @@ const chapters = [
   },
   {
     id: "capstone",
-    rail: "Capstone and thesis",
-    kicker: "Infineon and end game semester",
+    kicker: "Infineon and the final semester",
     title: "Capstone and thesis",
     marks: ["infineon"],
     body: [
-      "The last semester was basically all Capstone Project and Master’s Thesis. It was intense and it was worth it.",
-      "The capstone was with Infineon and the work was strongly connected to real innovation challenges and how to create value in a sustainable way.",
-      "We earned an internal innovation award when we presented our work to the company, and that became another 1.0 moment for us."
+      "The final semester centered on a capstone with Infineon and my master’s thesis.",
+      "We focused on sustainable innovation and business model design for circular economy challenges.",
+      "The project earned an internal innovation award when we presented it to the company."
     ],
     milestones: [
       "Capstone project with Infineon",
@@ -138,14 +128,13 @@ const chapters = [
   },
   {
     id: "generali",
-    rail: "Generali work",
     kicker: "Network automation and enterprise reality",
     title: "Seeing enterprise innovation up close",
     marks: ["generali"],
     body: [
-      "During my master’s, I was also working part time as a Network Automation Engineer at Assicurazioni Generali.",
-      "That role helped me see the corporate reality of innovation. What works, what gets stuck, and why governance matters so much when you want innovation to scale.",
-      "It also shaped my thesis direction and made the topic feel real, not academic."
+      "During my master’s, I worked part time as a Network Automation Engineer at Assicurazioni Generali.",
+      "It showed me how innovation looks inside a large organization and why governance matters when you want innovation to scale.",
+      "This experience shaped my thesis and made the topic feel real, not academic."
     ],
     milestones: [
       "Network automation work in an enterprise environment",
@@ -155,19 +144,18 @@ const chapters = [
   },
   {
     id: "now",
-    rail: "Now",
-    kicker: "EPG and what I want next",
+    kicker: "EPG and the next chapter",
     title: "Where I am now",
     marks: ["epg"],
     body: [
-      "After graduating, I joined EPG as a Junior Software Developer in PMC.",
-      "I am still ever hungry for new challenges, and my focus keeps getting sharper: innovation, digitalization, and building efficient, future ready organizations.",
-      "That is why I am aiming for roles in consulting, product, or project management where I can work at the intersection of tech and business."
+      "After graduating, I joined EPG as a Junior Software Developer.",
+      "I am building my career in Germany and learning how German organizations work from the inside.",
+      "I am aiming for roles in consulting, product, or project management where tech and business meet."
     ],
     milestones: [
-      "Junior Software Developer at EPG in PMC",
-      "Clear focus on innovation and digitalization",
-      "Target roles: consulting, product, project or program management"
+      "Junior Software Developer at EPG",
+      "Learning how German organizations operate",
+      "Target roles in consulting, product, or project management"
     ],
   },
 ]
@@ -185,69 +173,40 @@ const chapters = [
       </p>
 
       <div class="pull">
-        <strong>Guiding principle</strong> There is nothing so useless as doing efficiently that which should not be done at all.
-        <div style="margin-top:6px;">Peter F. Drucker</div>
+        <div class="pullHeading">Guiding principle</div>
+        <div class="pullQuote">There is nothing so useless as doing efficiently that which should not be done at all.</div>
+        <div class="pullAuthor">Peter F. Drucker</div>
       </div>
 
       <div class="ctaRow" style="margin-top:18px;">
         <a class="btn btnPrimary" href="/en/#contact">Contact</a>
-        <a class="btn" href="/en/">Back</a>
+        <a class="btn" href="/en/">Back to profile</a>
       </div>
     </section>
 
     <section class="section story">
-      <aside class="rail">
-        <div class="railTitle">Chapters</div>
-        {chapters.map(c => (
-          <a class="railLink" href={`#${c.id}`} data-rail={c.id}>
-            <span class="railDot"></span>
-            <span>{c.rail}</span>
-          </a>
-        ))}
-      </aside>
+      {chapters.map(c => (
+        <section class="chapter" id={c.id}>
+          <div class="chapterHeader">
+            <div class="chapterKicker">{c.kicker}</div>
+            <h2>{c.title}</h2>
+          </div>
 
-      <div>
-        {chapters.map(c => (
-          <section class="chapter" id={c.id} data-chapter>
-            <div class="chapterTop">
-              <div>
-                <div class="chapterKicker">{c.kicker}</div>
-                <h2>{c.title}</h2>
-              </div>
-              <div class="marks" aria-label="Related organizations">
-                {c.marks.map(key => (
-                  <img class="mark" loading="lazy" src={MARK[key].src} alt={MARK[key].alt} />
-                ))}
-              </div>
+          {c.body.map(p => <p>{p}</p>)}
+
+          <ul class="milestones">
+            {c.milestones.map(m => <li>{m}</li>)}
+          </ul>
+
+          {c.marks.length ? (
+            <div class="chapterMarks" aria-label="Related organizations">
+              {c.marks.map(key => (
+                <img class="mark" loading="lazy" src={MARK[key].src} alt={MARK[key].alt} />
+              ))}
             </div>
-
-            {c.body.map(p => <p>{p}</p>)}
-
-            <ul class="milestones">
-              {c.milestones.map(m => <li>{m}</li>)}
-            </ul>
-          </section>
-        ))}
-      </div>
+          ) : null}
+        </section>
+      ))}
     </section>
   </main>
-
-  <script>
-    const sections = Array.from(document.querySelectorAll("[data-chapter]"))
-    const railLinks = Array.from(document.querySelectorAll("[data-rail]"))
-
-    const setActive = (id) => {
-      railLinks.forEach(a => a.classList.toggle("active", a.getAttribute("data-rail") === id))
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries
-        .filter(e => e.isIntersecting)
-        .sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0]
-      if (visible) setActive(visible.target.id)
-    }, { rootMargin: "-30% 0px -60% 0px", threshold: [0.2, 0.35, 0.5, 0.65] })
-
-    sections.forEach(s => observer.observe(s))
-    if (sections[0]) setActive(sections[0].id)
-  </script>
 </BaseLayout>

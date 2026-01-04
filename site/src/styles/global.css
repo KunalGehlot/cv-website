@@ -155,6 +155,13 @@ main{ padding: 54px 0 80px; }
   gap: 26px;
   margin-top: 18px;
 }
+.highlight{
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid rgba(210,210,215,0.7);
+  box-shadow: var(--shadow2);
+}
 .highlight h3{
   margin: 0 0 8px;
   font-size: 16px;
@@ -271,6 +278,9 @@ footer{
 }
 .bookNote{
   margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 @media (max-width: 900px){
@@ -333,7 +343,7 @@ footer{
   gap: 18px;
   flex-wrap: wrap;
   align-items: center;
-  margin-top: 16px;
+  margin-top: 0;
 }
 .mark{
   height: 16px;
@@ -348,24 +358,63 @@ footer{
   transform: translateY(-1px);
 }
 
+/* --- Story layout --- */
+.section.story{
+  border-top: 0;
+  padding-top: 26px;
+}
+.story{
+  display: grid;
+  gap: 24px;
+}
+.chapter{
+  padding: 22px 0;
+}
+.chapterHeader{
+  display: grid;
+  gap: 6px;
+}
+.chapterKicker{
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.milestones{
+  margin-top: 12px;
+  padding-left: 18px;
+  color: var(--muted);
+}
+.milestones li{ margin: 6px 0; }
+.chapterMarks{
+  display:flex;
+  justify-content:flex-end;
+  gap: 14px;
+  margin-top: 12px;
+}
+
 /* --- Story “pull quote” --- */
 .pull{
   margin-top: 16px;
-  padding: 16px 16px;
-  border-left: 2px solid rgba(210,210,215,0.9);
-  background: rgba(250,250,252,0.7);
-  border-radius: 14px;
-  color: var(--muted);
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid rgba(210,210,215,0.7);
+  box-shadow: var(--shadow2);
   max-width: 76ch;
 }
-.pull strong{ color: var(--text); font-weight: 600; }
-
-.chapterTop{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap: 14px;
-  flex-wrap:wrap;
+.pullHeading{
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
 }
-
-.chapterTop .marks{ margin-top: 0; }
+.pullQuote{
+  margin-top: 8px;
+  color: var(--text);
+  font-style: italic;
+}
+.pullAuthor{
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
