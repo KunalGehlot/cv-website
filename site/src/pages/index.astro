@@ -15,8 +15,20 @@ const target = `${base}en/`;
     <link rel="alternate" hreflang="en" href={target} />
     <link rel="alternate" hreflang="de" href={`${base}de/`} />
     <link rel="alternate" hreflang="x-default" href={target} />
+    <style>
+      body{
+        user-select: none;
+        -webkit-user-select: none;
+      }
+    </style>
   </head>
   <body>
     <p>Redirecting<a href={target}></a>.</p>
+    <script>
+      const suppress = (event) => event.preventDefault();
+      document.addEventListener("contextmenu", suppress);
+      document.addEventListener("selectstart", suppress);
+      document.addEventListener("copy", suppress);
+    </script>
   </body>
 </html>

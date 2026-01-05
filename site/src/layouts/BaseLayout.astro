@@ -47,5 +47,12 @@ const locale = lang === "de" ? "de_DE" : "en_US";
   </head>
   <body>
     <slot />
+    <script>
+      // Disable context menu, text selection, and copying
+      const suppress = (event) => event.preventDefault();
+      document.addEventListener("contextmenu", suppress);
+      document.addEventListener("selectstart", suppress);
+      document.addEventListener("copy", suppress);
+    </script>
   </body>
 </html>
