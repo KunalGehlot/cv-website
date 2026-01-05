@@ -17,7 +17,8 @@ const href = (p) => `${base}${p.replace(/^\//, "")}`;
         <a class="pronouns" href="https://pronouns.org" target="_blank" rel="noopener">he / his / him</a>
       </div>
       <p>
-        I build future ready products and organizations, where engineering, management, and entrepreneurial thinking meet.
+        MBA (Digitalization & Industrial Change) with a software and automation core—building logistics products, innovation
+        governance, and data systems across Germany and India.
       </p>
 
       <div class="ctaRow">
@@ -27,16 +28,16 @@ const href = (p) => `${base}${p.replace(/^\//, "")}`;
 
       <div class="highlights">
         <div class="highlight">
-          <h3>Thesis: Innovation Governance in MNCs</h3>
-          <p>Designed a governance model to align global innovation hubs, linking funding choices to clear portfolio KPIs in a Generali case study.</p>
+          <h3>Logistics software (EPG LFS)</h3>
+          <p>Extending COBOL-based warehouse management capabilities for global logistics clients at Erhardt + Partner Group.</p>
         </div>
         <div class="highlight">
-          <h3>Transformation & Automation</h3>
-          <p>Removed manual handoffs with automation and workflow cleanup, improving speed and reliability for operations teams.</p>
+          <h3>Innovation governance at Generali</h3>
+          <p>Built a master thesis operating model and KPI approach for a decentralized insurer; delivered network automation for EU data centers.</p>
         </div>
         <div class="highlight">
-          <h3>Data-driven Decision Making</h3>
-          <p>Built data pipelines that turn unstructured medical reports into structured insights for decision support.</p>
+          <h3>Health data pipelines</h3>
+          <p>Led back-end and data processing for 100k+ medical records annually, enabling analytics and revenue lift.</p>
         </div>
       </div>
     </section>
@@ -47,50 +48,50 @@ const href = (p) => `${base}${p.replace(/^\//, "")}`;
 
         <div class="item">
           <div class="itemTitle">
+            <strong>Junior Software Developer - Erhardt + Partner Group</strong>
+            <span class="meta">Alzenau · Oct 2025-present</span>
+          </div>
+          <div class="meta">Extending COBOL-based warehouse management for logistics clients.</div>
+        </div>
+
+        <div class="item">
+          <div class="itemTitle">
             <strong>Working Student - Generali</strong>
-            <span class="meta">Aachen · 2023-present</span>
+            <span class="meta">Aachen · Dec 2023-Jun 2025</span>
           </div>
-          <div class="meta">Innovation governance & automation support</div>
+          <div class="meta">Innovation governance thesis + network automation for EU data centers.</div>
         </div>
 
         <div class="item">
           <div class="itemTitle">
-            <strong>Back-end / Data Engineer - Health Vectors</strong>
-            <span class="meta">2021-2023</span>
+            <strong>Software Engineer - Health Vectors</strong>
+            <span class="meta">May 2021-Aug 2023</span>
           </div>
-          <div class="meta">Data pipelines, analytics, decision support</div>
-        </div>
-
-        <div class="item">
-          <div class="itemTitle">
-            <strong>Business Analyst - 3 Edge Technovision</strong>
-            <span class="meta">Earlier</span>
-          </div>
-          <div class="meta">Business analysis & stakeholder coordination</div>
+          <div class="meta">Back-end and data pipelines for 100k+ medical reports per year.</div>
         </div>
       </div>
 
       <div>
-        <h2 class="h2">Skills</h2>
+        <h2 class="h2">Skills & tools</h2>
 
         <div class="item">
-          <div class="itemTitle"><strong>Consulting & Transformation</strong></div>
-          <div class="meta">Stakeholders, requirements, KPI/OKR thinking</div>
+          <div class="itemTitle"><strong>Technical</strong></div>
+          <div class="meta">Python, COBOL, SQL, Docker, Node.js, Terraform, ML/AI, 3D printing</div>
         </div>
 
         <div class="item">
-          <div class="itemTitle"><strong>Product / Project</strong></div>
-          <div class="meta">Delivery support, prioritization, Agile</div>
+          <div class="itemTitle"><strong>Innovation & delivery</strong></div>
+          <div class="meta">Innovation governance, business model innovation, design thinking, agile projects, process optimization</div>
         </div>
 
         <div class="item">
-          <div class="itemTitle"><strong>Data & Automation</strong></div>
-          <div class="meta">Python, SQL, automation, analytics</div>
+          <div class="itemTitle"><strong>Leadership</strong></div>
+          <div class="meta">Stakeholder engagement, cross-functional facilitation, strategic decision-making</div>
         </div>
 
         <div class="item">
-          <div class="itemTitle"><strong>Tools</strong></div>
-          <div class="meta">Azure, Git, Docker, Tableau</div>
+          <div class="itemTitle"><strong>Languages</strong></div>
+          <div class="meta">English (C2), German (C1), Hindi (C2)</div>
         </div>
 
         <h2 class="h2" style="margin-top:28px;">Education</h2>
@@ -107,6 +108,9 @@ const href = (p) => `${base}${p.replace(/^\//, "")}`;
           <div class="itemTitle">
             <strong>B.Tech - Computer Science</strong>
             <span class="meta">2017-2021</span>
+          </div>
+          <div class="meta">
+            <a class="inlineLink" href={href("cv/zab.pdf")} target="_blank" rel="noopener">ZAB verification (PDF)</a> · Confirms degree validity in Germany.
           </div>
         </div>
       </div>
@@ -129,45 +133,52 @@ const href = (p) => `${base}${p.replace(/^\//, "")}`;
       </div>
 
       <div class="booksGrid">
-        <a class="book" href="https://www.goodreads.com/book/show/25814544-sprint" target="_blank" rel="noopener">
+        <a class="book" href="https://www.goodreads.com/book/show/57338463-the-corporate-startup" target="_blank" rel="noopener" style="--book-bg:#d6dfe2;">
           <img
             class="bookCover"
-            src="https://covers.openlibrary.org/b/isbn/150112174X-L.jpg"
-            alt="Sprint cover"
+            src={href("img/books/corporate-startup.jpg")}
+            alt="The Corporate Startup cover"
             loading="lazy"
           />
-          <div class="bookTitle">Sprint</div>
-          <div class="bookMeta">Jake Knapp · Rapid problem-solving</div>
-          <div class="bookNote">Great for turning a fuzzy problem into a focused week and a tested direction.</div>
+          <div class="bookTitle">The Corporate Startup</div>
+          <div class="bookMeta">Tendayi Viki, Dan Toma, Esther Gons · Venture building</div>
+          <div class="bookNote">Playbook for running venture portfolios inside enterprises with clear governance and metrics.</div>
         </a>
 
-        <a class="book" href="https://www.goodreads.com/book/show/10127019-the-lean-startup" target="_blank" rel="noopener">
+        <a class="book" href="https://www.goodreads.com/book/show/22776635-the-business-model-navigator" target="_blank" rel="noopener" style="--book-bg:#858581;">
           <img
             class="bookCover"
-            src="https://covers.openlibrary.org/b/isbn/0307887898-L.jpg"
-            alt="The Lean Startup cover"
-            loading="lazy"
-          />
-          <div class="bookTitle">The Lean Startup</div>
-          <div class="bookMeta">Eric Ries · Experimentation & iteration</div>
-          <div class="bookNote">A reminder to test assumptions early and learn before scaling a solution.</div>
-        </a>
-
-        <a
-          class="book"
-          href="https://www.goodreads.com/book/show/22776635-the-business-model-navigator"
-          target="_blank"
-          rel="noopener"
-        >
-          <img
-            class="bookCover"
-            src="https://covers.openlibrary.org/b/isbn/1292065834-L.jpg"
+            src={href("img/books/business-model-navigator.jpg")}
             alt="The Business Model Navigator cover"
             loading="lazy"
           />
           <div class="bookTitle">The Business Model Navigator</div>
           <div class="bookMeta">Gassmann et al. · Business model patterns</div>
-          <div class="bookNote">Useful patterns for reframing a business model when constraints are real.</div>
+          <div class="bookNote">50+ patterns that quickly reframe value creation and capture for new offers.</div>
+        </a>
+
+        <a class="book" href="https://www.goodreads.com/book/show/10127019-the-lean-startup" target="_blank" rel="noopener" style="--book-bg:#8ab5d4;">
+          <img
+            class="bookCover"
+            src={href("img/books/lean-startup.jpg")}
+            alt="The Lean Startup cover"
+            loading="lazy"
+          />
+          <div class="bookTitle">The Lean Startup</div>
+          <div class="bookMeta">Eric Ries · Experimentation & iteration</div>
+          <div class="bookNote">Systematically tests assumptions early so the right product emerges before scaling.</div>
+        </a>
+
+        <a class="book" href="https://www.goodreads.com/book/show/25814544-sprint" target="_blank" rel="noopener" style="--book-bg:#77d2d9;">
+          <img
+            class="bookCover"
+            src={href("img/books/sprint.jpg")}
+            alt="Sprint cover"
+            loading="lazy"
+          />
+          <div class="bookTitle">Sprint</div>
+          <div class="bookMeta">Jake Knapp · Rapid problem-solving</div>
+          <div class="bookNote">A crisp five-day loop to align a team and test a risky idea with users fast.</div>
         </a>
       </div>
     </section>
