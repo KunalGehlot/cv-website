@@ -144,3 +144,5 @@ vite.config.ts.timestamp-*
 .pnpm/
 .modules
 .pnpm*
+
+.DS_Store
