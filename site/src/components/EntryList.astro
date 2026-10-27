@@ -1,0 +1,138 @@
+---
+// A dated list from the timeline: years in a narrow column, then role, organisation and bullets.
+// Experience, education and leadership on the home page all use it.
+import { formatYears, t, type Lang } from "../data/i18n";
+import type { Entry } from "../data/timeline";
+
+interface Props {
+  lang: Lang;
+  id: string;
+  heading: string;
+  entries: Entry[];
+  /** Leadership: one line per entry instead of the full bullets. */
+  compact?: boolean;
+  /** Links shown after a bullet, keyed by bullet id. */
+  extra?: Record<string, { href: string; text: string }>;
+}
+
+const { lang, id, heading, entries, compact = false, extra = {} } = Astro.props;
+const org = (e: Entry) => [t(e.org, lang), e.place && t(e.place, lang)].filter(Boolean).join(", ");
+---
+
+<section class="block wrap split" id={id} aria-labelledby={`${id}-title`}>
+  <h2 id={`${id}-title`}>{heading}</h2>
+  <ol class="entries" class:list={{ compact }}>
+    {
+      entries.map((e) => (
+        <li data-track={e.track}>
+          <span class="years">{formatYears(e.start!, e.end!, lang)}</span>
+          <div>
+            <h3>{t(e.title, lang)}</h3>
+            <p class="org">{org(e)}</p>
+            {compact ? (
+              e.bullets && <p class="line">{t(e.bullets[0].text, lang)}</p>
+            ) : (
+              e.bullets && (
+                <ul>
+                  {e.bullets.map((b) => (
+                    <li>
+                      {t(b.text, lang)}
+                      {extra[b.id] && (
+                        <>
+                          {" "}
+                          <a href={extra[b.id].href}>{extra[b.id].text}</a>
+                        </>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )
+            )}
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .entries {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .entries > li {
+    display: grid;
+    grid-template-columns: 6.5em 1fr;
+    gap: 0 24px;
+    padding: 24px 0;
+    border-top: 1px solid var(--rule);
+  }
+  .entries > li:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+  [data-track="eng"] {
+    --hand: var(--hand-eng);
+  }
+  [data-track="lead"] {
+    --hand: var(--hand-lead);
+  }
+  .years {
+    position: relative;
+    padding-left: 14px;
+    color: var(--slate);
+    font-size: 15px;
+    line-height: 1.7;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  /* The hand's colour, as a short note beside the years. */
+  .years::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.35em;
+    width: 4px;
+    height: 1.1em;
+    border-radius: 2px;
+    background: var(--hand, var(--slate));
+  }
+  h3 {
+    font-size: 21px;
+    line-height: 1.3;
+  }
+  .org {
+    color: var(--slate);
+    font-size: 16px;
+    margin-top: 2px;
+  }
+  ul {
+    margin: 12px 0 0;
+    padding-left: 1.1em;
+  }
+  ul li + li {
+    margin-top: 6px;
+  }
+  ul li::marker {
+    color: var(--slate);
+  }
+  .line {
+    margin-top: 6px;
+    font-size: 16px;
+  }
+  .compact > li {
+    padding: 16px 0;
+  }
+  .compact h3 {
+    font-size: 18px;
+  }
+  @media (max-width: 599.98px) {
+    .entries > li {
+      grid-template-columns: 1fr;
+    }
+    .years {
+      margin-bottom: 4px;
+    }
+  }
+</style>

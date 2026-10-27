@@ -1,0 +1,163 @@
+---
+// How I build with AI: the six steps of the loop, as a step sequencer. When the section comes into
+// view, a light runs across the steps once, like a sequencer playing its pattern.
+import type { Lang } from "../data/i18n";
+import { opentiles } from "../data/work";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { spec, plan, ci, credits } = opentiles.artefacts;
+const text = {
+  en: {
+    heading: "How I build with AI",
+    intro: "The loop I used for OpenTiles and bring to my work. The model writes much of the code; I own what ships.",
+    steps: [
+      { title: "Write the spec.", body: "What we're building and why, before any code.", link: { href: spec, text: "The OpenTiles spec" } },
+      { title: "Plan in small tasks.", body: "Every task gets an ID and a definition of done, in one plan everyone works from.", link: { href: plan, text: "PLAN.md" } },
+      { title: "Direct the model.", body: "The LLM implements one task at a time; I steer, correct and decide." },
+      { title: "Let the checks decide.", body: "Lint, type checks, unit tests and end-to-end tests run on every change. Nothing merges while a check fails.", link: { href: ci, text: "The CI workflow" } },
+      { title: "Review and verify provenance.", body: "I read every change, check the licence of every dependency and asset, and audited the code against the closest open-source project.", link: { href: credits, text: "CREDITS.md" } },
+      { title: "Disclose it.", body: "AI use is stated openly in the credits and in the app." },
+    ],
+  },
+  de: {
+    heading: "Wie ich mit KI entwickle",
+    intro: "Die Schleife, mit der ich OpenTiles gebaut habe und die ich in meine Arbeit mitnehme. Das Modell schreibt einen Großteil des Codes; was ausgeliefert wird, verantworte ich.",
+    steps: [
+      { title: "Die Spezifikation schreiben.", body: "Was wir bauen und warum, bevor es Code gibt.", link: { href: spec, text: "Die OpenTiles-Spezifikation" } },
+      { title: "In kleinen Aufgaben planen.", body: "Jede Aufgabe hat eine ID und eine Definition of Done, in einem Plan, nach dem alle arbeiten.", link: { href: plan, text: "PLAN.md" } },
+      { title: "Das Modell führen.", body: "Das LLM setzt eine Aufgabe nach der anderen um; ich steuere, korrigiere und entscheide." },
+      { title: "Die Prüfungen entscheiden lassen.", body: "Linting, Typprüfung, Unit-Tests und End-to-End-Tests laufen bei jeder Änderung. Solange eine Prüfung fehlschlägt, wird nichts gemergt.", link: { href: ci, text: "Der CI-Workflow" } },
+      { title: "Prüfen und Herkunft sichern.", body: "Ich lese jede Änderung, prüfe die Lizenz jeder Abhängigkeit und jedes Assets und habe den Code mit dem ähnlichsten Open-Source-Projekt verglichen.", link: { href: credits, text: "CREDITS.md" } },
+      { title: "Offenlegen.", body: "Der Einsatz von KI steht offen in den Credits und in der App." },
+    ],
+  },
+}[lang];
+---
+
+<section class="block wrap" id="how" aria-labelledby="how-title">
+  <h2 id="how-title">{text.heading}</h2>
+  <p class="intro">{text.intro}</p>
+  <ol class="steps">
+    {
+      text.steps.map((s, i) => (
+        <li style={`--i:${i}`}>
+          <span class="n" aria-hidden="true">
+            {i + 1}
+          </span>
+          <h3>{s.title}</h3>
+          <p>{s.body}</p>
+          {s.link && <a href={s.link.href}>{s.link.text}</a>}
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<script>
+  // Run the light across the steps once, when most of the section is on screen.
+  const steps = document.querySelector<HTMLElement>(".steps");
+  if (steps && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    new IntersectionObserver((entries, observer) => {
+      if (!entries[0].isIntersecting) return;
+      observer.disconnect();
+      steps.classList.add("run");
+    }, { threshold: 0.5 }).observe(steps);
+  }
+</script>
+
+<style>
+  .intro {
+    margin-top: 16px;
+    font-size: 21px;
+    line-height: 1.45;
+  }
+  .steps {
+    display: grid;
+    gap: 0;
+    margin: 40px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+  @media (min-width: 720px) {
+    .steps {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0 32px;
+    }
+  }
+  li {
+    position: relative;
+    padding: 20px 20px 24px 0;
+    border-top: 3px solid var(--rule);
+  }
+  /* The sequencer light: each step's top edge lights in turn, and the last one stays lit. */
+  li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -3px;
+    height: 3px;
+    background: var(--hand-eng);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  @keyframes pass {
+    0% {
+      transform: scaleX(0);
+    }
+    40%,
+    70% {
+      transform: scaleX(1);
+    }
+    100% {
+      transform: scaleX(1);
+      opacity: 0.35;
+    }
+  }
+  .run li::before {
+    animation: pass 900ms ease-out both;
+    animation-delay: calc(var(--i) * 260ms);
+  }
+  .run li:last-child::before {
+    animation-name: pass-hold;
+  }
+  @keyframes pass-hold {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  .n {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 36px;
+    line-height: 1;
+    color: var(--hand-eng);
+    font-variant-numeric: tabular-nums;
+  }
+  h3 {
+    margin-top: 12px;
+    font-size: 19px;
+    line-height: 1.25;
+  }
+  li p {
+    margin-top: 8px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--slate);
+  }
+  li a {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 15px;
+    font-weight: 500;
+  }
+</style>

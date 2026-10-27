@@ -1,0 +1,92 @@
+---
+import PianoRoll from "./PianoRoll.astro";
+import type { Lang } from "../data/i18n";
+
+interface Props {
+  lang: Lang;
+  mobileRoll?: "vertical" | "scroll";
+}
+
+const { lang, mobileRoll } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const text = {
+  en: {
+    h1: "I harness AI to how a company really works: its processes, its people and its code.",
+    lede: "Software engineer with an MBA in Digitalization and Industrial Change from RWTH Aachen. At EPG I’m building the harness that gives an AI coding agent our processes and context, so it can help maintain the COBOL warehouse platform behind our customers’ installations. In my own time I build OpenTiles, a free piano trainer I wrote with an LLM under my direction.",
+    small: "Frankfurt area. English and German. he/him",
+    work: "See my work",
+    cv: "Download CV (PDF)",
+  },
+  de: {
+    h1: "Ich passe KI an die Art an, wie ein Unternehmen wirklich arbeitet: an seine Prozesse, seine Menschen und seinen Code.",
+    lede: "Softwareentwickler mit einem MBA in Digitalization and Industrial Change der RWTH Aachen. Bei EPG baue ich die Umgebung, die einem KI-Coding-Agenten unsere Abläufe und unseren Kontext mitgibt, damit er bei der Wartung der COBOL-Lagerverwaltung hinter den Installationen unserer Kunden helfen kann. In meiner Freizeit baue ich OpenTiles, einen kostenlosen Klaviertrainer, den ich mit einem LLM unter meiner Anleitung entwickelt habe.",
+    small: "Rhein-Main-Gebiet. Englisch und Deutsch. he/him",
+    work: "Meine Arbeiten ansehen",
+    cv: "Lebenslauf herunterladen (PDF)",
+  },
+}[lang];
+---
+
+<section class="hero wrap" aria-labelledby="hero-title">
+  <h1 id="hero-title">{text.h1}</h1>
+  <div class="intro">
+    <p class="lede">{text.lede}</p>
+    <div class="side">
+      <p class="small">{text.small}</p>
+      <div class="actions">
+        <a class="action primary" href="#work">{text.work}</a>
+        <a class="action" href={`${base}cv/cv-${lang}.pdf`}>{text.cv}</a>
+      </div>
+    </div>
+  </div>
+  <div class="rollWrap">
+    <PianoRoll lang={lang} mobile={mobileRoll} />
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-top: clamp(32px, 4vw, 56px);
+  }
+  h1 {
+    max-width: 17em;
+  }
+  .intro {
+    margin-top: 24px;
+  }
+  /* On wide screens the lede and the actions sit side by side, so the roll fits on the first screen. */
+  @media (min-width: 1024px) {
+    .intro {
+      display: grid;
+      grid-template-columns: 7fr 5fr;
+      gap: 48px;
+      align-items: end;
+    }
+  }
+  .lede {
+    font-size: clamp(18px, 1.6vw, 21px);
+    line-height: 1.5;
+  }
+  .small {
+    margin-top: 16px;
+    font-size: 16px;
+    color: var(--slate);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  @media (min-width: 1024px) {
+    .small {
+      margin-top: 0;
+    }
+    .actions {
+      margin-top: 16px;
+    }
+  }
+  .rollWrap {
+    margin-top: clamp(40px, 4vw, 56px);
+  }
+</style>

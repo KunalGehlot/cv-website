@@ -1,0 +1,99 @@
+---
+// The four books that reflect my innovation philosophy, with their covers small.
+import { books, goodreadsProfile } from "../data/books";
+import { t, type Lang } from "../data/i18n";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const text = {
+  en: { heading: "Books that reflect my innovation philosophy", more: "More on Goodreads" },
+  de: { heading: "Bücher, die meine Sicht auf Innovation widerspiegeln", more: "Mehr auf Goodreads" },
+}[lang];
+---
+
+<section class="block wrap" id="books" aria-labelledby="books-title">
+  <h2 id="books-title">{text.heading}</h2>
+  <ul class="books">
+    {
+      books.map((b) => (
+        <li>
+          <a href={b.goodreads}>
+            <span class="cover">
+              <img src={`${base}${b.cover}`} alt="" loading="lazy" decoding="async" />
+            </span>
+            <span class="title">{b.title}</span>
+          </a>
+          <span class="author">{b.author}</span>
+          <p>{t(b.note, lang)}</p>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="more"><a href={goodreadsProfile}>{text.more}</a></p>
+</section>
+
+<style>
+  .books {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 40px 32px;
+    margin: 40px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  li a {
+    display: block;
+    text-decoration: none;
+  }
+  /* Covers keep their own proportions and stand on a common baseline. */
+  .cover {
+    display: flex;
+    align-items: flex-end;
+    height: 152px;
+  }
+  img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 112px;
+    max-height: 152px;
+    border-radius: 3px;
+    box-shadow: 0 1px 0 var(--rule);
+    transition: transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  li a:hover img {
+    transform: rotate(-3deg) translateY(-4px);
+  }
+  .title {
+    display: block;
+    margin-top: 16px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 19px;
+    line-height: 1.25;
+  }
+  li a:hover .title {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  .author {
+    display: block;
+    color: var(--slate);
+    font-size: 15px;
+  }
+  li p {
+    margin-top: 8px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .more {
+    margin-top: 32px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+</style>

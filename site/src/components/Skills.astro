@@ -1,0 +1,107 @@
+---
+// Skills in groups, then languages, then certificates and awards. Plain text, no levels.
+import { credentials, examStatus } from "../data/credentials";
+import { t, type Lang } from "../data/i18n";
+import { profile } from "../data/profile";
+import { skills } from "../data/skills";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const text = {
+  en: { skills: "Skills", languages: "Languages", credentials: "Certificates and awards" },
+  de: { skills: "Kenntnisse", languages: "Sprachen", credentials: "Zertifikate und Auszeichnungen" },
+}[lang];
+const languages = profile.languages.map((l) => `${t(l.name, lang)} (${l.level})`).join(", ");
+// The exam status, or just the year.
+const when = (c: (typeof credentials)[number]) => examStatus(c, lang) ?? c.date?.slice(0, 4);
+---
+
+<section class="block wrap split" id="skills" aria-labelledby="skills-title">
+  <h2 id="skills-title">{text.skills}</h2>
+  <div>
+    <dl class="groups">
+      {
+        skills.map((g) => (
+          <div>
+            <dt>{t(g.name, lang)}</dt>
+            <dd>{g.items.map((i) => t(i, lang)).join(", ")}</dd>
+          </div>
+        ))
+      }
+      <div>
+        <dt>{text.languages}</dt>
+        <dd>{languages}</dd>
+      </div>
+    </dl>
+
+    <h3 id="credentials">{text.credentials}</h3>
+    <ul class="credentials">
+      {
+        credentials.map((c) => (
+          <li>
+            <span class="cName">
+              {c.credentialUrl ? <a href={c.credentialUrl}>{t(c.name, lang)}</a> : t(c.name, lang)}
+              {c.issuer && <span class="cIssuer">{c.issuer}</span>}
+            </span>
+            {when(c) && <span class="cWhen">{when(c)}</span>}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .groups {
+    margin: 0;
+    display: grid;
+    gap: 20px;
+  }
+  @media (min-width: 720px) {
+    .groups {
+      grid-template-columns: 1fr 1fr;
+      gap: 24px 40px;
+    }
+  }
+  dt {
+    font-weight: 600;
+    font-size: 16px;
+  }
+  dd {
+    margin: 4px 0 0;
+    color: var(--slate);
+    font-size: 16px;
+    line-height: 1.55;
+  }
+  h3 {
+    margin-top: 56px;
+    font-size: 21px;
+  }
+  .credentials {
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .credentials li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2px 16px;
+    padding: 12px 0;
+    border-top: 1px solid var(--rule);
+    font-size: 16px;
+  }
+  .cIssuer {
+    display: block;
+    color: var(--slate);
+    font-size: 15px;
+  }
+  .cWhen {
+    color: var(--slate);
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+  }
+</style>

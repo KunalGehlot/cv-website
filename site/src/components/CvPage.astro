@@ -1,0 +1,276 @@
+---
+// The CV as a web page: the same data as the PDF, in plain semantic HTML with the standard section
+// names that people and screening tools look for. It prints cleanly too.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "./Header.astro";
+import Footer from "./Footer.astro";
+import { credentials, examStatus } from "../data/credentials";
+import { formatRange, t, type Lang } from "../data/i18n";
+import { profile } from "../data/profile";
+import { skills } from "../data/skills";
+import { dated, entry, type Entry } from "../data/timeline";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const text = {
+  en: {
+    title: "CV, Kunal Gehlot",
+    role: "Software Developer",
+    pdf: "Download as PDF",
+    profile: "Profile",
+    experience: "Experience",
+    projects: "Projects",
+    education: "Education",
+    skills: "Skills",
+    credentials: "Certificates and awards",
+    languages: "Languages",
+    leadership: "Leadership and volunteering",
+    grade: "Grade",
+  },
+  de: {
+    title: "Lebenslauf, Kunal Gehlot",
+    role: "Softwareentwickler",
+    pdf: "Als PDF herunterladen",
+    profile: "Profil",
+    experience: "Berufserfahrung",
+    projects: "Projekte",
+    education: "Ausbildung",
+    skills: "Kenntnisse",
+    credentials: "Zertifikate und Auszeichnungen",
+    languages: "Sprachen",
+    leadership: "Engagement und Führung",
+    grade: "Note",
+  },
+}[lang];
+
+const projects = ["opentiles", "thesis", "infineon"].map(entry);
+const where = (e: Entry) => [formatRange(e.start!, e.end!, lang), e.place && t(e.place, lang)].filter(Boolean).join(", ");
+const bulletsOf = (e: Entry) => (e.cv?.bullets ? e.cv.bullets.map((id) => e.bullets!.find((b) => b.id === id)!) : (e.bullets ?? []));
+const grade = (g: string) => (lang === "de" ? g.replace(".", ",") : g);
+---
+
+<BaseLayout title={text.title} lang={lang} person="profile">
+  <Header lang={lang} langLinks={{ en: "en/cv/", de: "de/cv/" }} />
+  <main id="main" class="wrap cv">
+    <header class="top">
+      <h1>{profile.name}</h1>
+      <p class="role">{text.role}, {t(profile.location, lang)}</p>
+      <p class="contact">
+        <a href={`mailto:${profile.email}`}>{profile.email}</a>
+        <a href={profile.linkedin.url}>linkedin.com/in/{profile.linkedin.handle}</a>
+        <a href={profile.github.url}>github.com/{profile.github.handle}</a>
+        <a href={profile.site}>gehlot.site</a>
+      </p>
+      <a class="action primary pdf" href={`${base}cv/cv-${lang}.pdf`}>{text.pdf}</a>
+    </header>
+
+    <section>
+      <h2>{text.profile}</h2>
+      <p>{t(profile.summary, lang)}</p>
+    </section>
+
+    <section>
+      <h2>{text.experience}</h2>
+      {
+        dated("work").map((e) => (
+          <article>
+            <h3>
+              {t(e.title, lang)}, {t(e.org, lang)}
+            </h3>
+            <p class="when">{where(e)}</p>
+            <ul>
+              {bulletsOf(e).map((b) => (
+                <li>{t(b.text, lang)}</li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+    </section>
+
+    <section>
+      <h2>{text.projects}</h2>
+      {
+        projects.map((e) => (
+          <article>
+            <h3>
+              {t(e.title, lang)}, {t(e.org, lang)}
+            </h3>
+            <p class="when">{where(e)}</p>
+            <ul>
+              {bulletsOf(e).map((b) => (
+                <li>{t(b.text, lang)}</li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+    </section>
+
+    <section>
+      <h2>{text.skills}</h2>
+      <dl>
+        {
+          skills.map((g) => (
+            <>
+              <dt>{t(g.name, lang)}</dt>
+              <dd>{g.items.map((i) => t(i, lang)).join(", ")}</dd>
+            </>
+          ))
+        }
+      </dl>
+    </section>
+
+    <section>
+      <h2>{text.education}</h2>
+      {
+        dated("education").map((e) => (
+          <article>
+            <h3>
+              {t(e.title, lang)}, {t(e.org, lang)}
+            </h3>
+            <p class="when">{where(e)}</p>
+            <ul>
+              {e.cv?.grade && !e.bullets?.some((b) => b.id === "grade") && (
+                <li>
+                  {text.grade}: {grade(e.cv.grade)}
+                </li>
+              )}
+              {e.bullets?.map((b) => (
+                <li>{t(b.text, lang)}</li>
+              ))}
+              {e.cv?.reference && (
+                <li>
+                  <a href={e.cv.reference.href}>{e.cv.reference.text}</a>
+                </li>
+              )}
+            </ul>
+          </article>
+        ))
+      }
+    </section>
+
+    <section>
+      <h2>{text.credentials}</h2>
+      <ul>
+        {
+          credentials.map((c) => (
+            <li>
+              {[t(c.name, lang), c.issuer, examStatus(c, lang) ?? c.date?.slice(0, 4)].filter(Boolean).join(", ")}
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section>
+      <h2>{text.languages}</h2>
+      <p>{profile.languages.map((l) => `${t(l.name, lang)} (${l.level})`).join(", ")}</p>
+    </section>
+
+    <section>
+      <h2>{text.leadership}</h2>
+      {
+        dated("volunteer").map((e) => (
+          <article>
+            <h3>
+              {t(e.title, lang)}, {t(e.org, lang)}
+            </h3>
+            <p class="when">{where(e)}</p>
+            {e.bullets && <p>{t(e.bullets[0].text, lang)}</p>}
+          </article>
+        ))
+      }
+    </section>
+  </main>
+  <Footer lang={lang} />
+</BaseLayout>
+
+<style>
+  .cv {
+    padding-top: clamp(32px, 5vw, 72px);
+    max-width: calc(var(--measure) + 2 * var(--gutter) + 160px);
+  }
+  .top {
+    padding-bottom: 32px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .role {
+    margin-top: 8px;
+    font-size: 21px;
+  }
+  .contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 20px;
+    margin-top: 12px;
+    font-size: 16px;
+  }
+  .pdf {
+    margin-top: 24px;
+  }
+  section {
+    margin-top: 40px;
+  }
+  h2 {
+    font-size: 24px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule);
+  }
+  article {
+    margin-top: 20px;
+  }
+  h3 {
+    font-size: 19px;
+    line-height: 1.3;
+  }
+  .when {
+    color: var(--slate);
+    font-size: 15px;
+  }
+  section > p,
+  article > p:not(.when) {
+    margin-top: 12px;
+  }
+  ul {
+    margin: 8px 0 0;
+    padding-left: 1.1em;
+  }
+  li + li {
+    margin-top: 4px;
+  }
+  dl {
+    margin: 12px 0 0;
+  }
+  dt {
+    margin-top: 12px;
+    font-weight: 600;
+  }
+  dd {
+    margin: 2px 0 0;
+  }
+
+  @media print {
+    :global(.siteHeader),
+    :global(.siteFooter),
+    :global(.skip),
+    .pdf {
+      display: none !important;
+    }
+    .cv {
+      padding: 0;
+      max-width: none;
+      font-size: 11pt;
+    }
+    section {
+      break-inside: avoid-page;
+    }
+    a {
+      text-decoration: none;
+    }
+  }
+</style>

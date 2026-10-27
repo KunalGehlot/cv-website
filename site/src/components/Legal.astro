@@ -1,0 +1,38 @@
+---
+// The frame for the two legal pages, which stay in German at their old URLs.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "./Header.astro";
+import Footer from "./Footer.astro";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<BaseLayout title={`${title}, Kunal Gehlot`} lang="de" description={`${title} von gehlot.site`}>
+  <Header lang="de" />
+  <main id="main" class="wrap legal">
+    <h1>{title}</h1>
+    <slot />
+  </main>
+  <Footer lang="de" />
+</BaseLayout>
+
+<style>
+  .legal {
+    padding-top: clamp(40px, 7vw, 96px);
+  }
+  .legal :global(h2) {
+    margin-top: 40px;
+    font-size: 24px;
+  }
+  .legal :global(p) {
+    margin-top: 12px;
+  }
+  .legal :global(address) {
+    margin-top: 12px;
+    font-style: normal;
+  }
+</style>

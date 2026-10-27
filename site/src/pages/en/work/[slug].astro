@@ -1,0 +1,8 @@
+---
+import CaseStudy from "../../../components/CaseStudy.astro";
+import { caseStudies } from "../../../data/work";
+
+export const getStaticPaths = () => caseStudies.map((w) => ({ params: { slug: w.slug } }));
+---
+
+<CaseStudy lang="en" slug={Astro.params.slug} />

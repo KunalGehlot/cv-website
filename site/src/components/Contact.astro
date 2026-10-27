@@ -1,0 +1,61 @@
+---
+// Contact: the email large, then LinkedIn and GitHub. No phone number and no address here.
+import type { Lang } from "../data/i18n";
+import { profile } from "../data/profile";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const text = {
+  en: { heading: "Contact", line: "Email or LinkedIn is the quickest way to reach me." },
+  de: { heading: "Kontakt", line: "Am schnellsten erreichen Sie mich per E-Mail oder über LinkedIn." },
+}[lang];
+---
+
+<section class="block wrap contact" id="contact" aria-labelledby="contact-title">
+  <h2 id="contact-title">{text.heading}</h2>
+  <p class="line">{text.line}</p>
+  <a class="email" href={`mailto:${profile.email}`}>{profile.email}</a>
+  <p class="links">
+    <a href={profile.linkedin.url}>LinkedIn <span>/in/{profile.linkedin.handle}</span></a>
+    <a href={profile.github.url}>GitHub <span>@{profile.github.handle}</span></a>
+  </p>
+</section>
+
+<style>
+  .line {
+    margin-top: 16px;
+    font-size: 21px;
+  }
+  .email {
+    display: inline-block;
+    margin-top: 24px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(24px, 5.2vw, 64px);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    overflow-wrap: anywhere;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.15em;
+    text-decoration-color: var(--hand-eng);
+  }
+  .email:hover {
+    text-decoration-color: var(--hand-lead);
+    text-decoration-thickness: 4px;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 32px;
+    margin-top: 32px;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  .links span {
+    color: var(--slate);
+    font-weight: 400;
+  }
+</style>

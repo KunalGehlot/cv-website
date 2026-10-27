@@ -1,0 +1,185 @@
+---
+import { profile } from "../data/profile";
+import type { Lang } from "../data/i18n";
+
+interface Props {
+  lang: Lang;
+  /** Paths (without the base) of this page in each language, for the language switch. */
+  langLinks?: Record<Lang, string>;
+}
+
+const { lang, langLinks = { en: "en/", de: "de/" } } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const href = (p: string) => `${base}${p.replace(/^\//, "")}`;
+const text = {
+  en: { work: "Work", story: "Story", cv: "CV", menu: "Menu", theme: "Dark theme", nav: "Main" },
+  de: { work: "Arbeiten", story: "Story", cv: "Lebenslauf", menu: "Menü", theme: "Dunkles Design", nav: "Hauptnavigation" },
+}[lang];
+const current = Astro.url.pathname;
+---
+
+<header class="siteHeader">
+  <div class="wrap bar">
+    <a class="name" href={href(`${lang}/`)}>{profile.name}</a>
+
+    <button class="menuButton" type="button" popovertarget="site-nav" aria-label={text.menu}>
+      <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" /></svg>
+    </button>
+
+    <nav id="site-nav" class="nav" popover aria-label={text.nav}>
+      <a href={href(`${lang}/#work`)}>{text.work}</a>
+      <a href={href(`${lang}/story/`)} aria-current={current.endsWith(`/${lang}/story/`) ? "page" : undefined}>{text.story}</a>
+      <a href={href(`${lang}/cv/`)} aria-current={current.endsWith(`/${lang}/cv/`) ? "page" : undefined}>{text.cv}</a>
+      <span class="langs">
+        <a href={href(langLinks.en)} hreflang="en" lang="en" aria-current={lang === "en" ? "true" : undefined}>EN</a>
+        <a href={href(langLinks.de)} hreflang="de" lang="de" aria-current={lang === "de" ? "true" : undefined}>DE</a>
+      </span>
+    </nav>
+
+    <button class="themeButton" type="button" aria-pressed="false" title={text.theme}>
+      <span class="sr-only">{text.theme}</span>
+      <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
+        <circle cx="10" cy="10" r="7" />
+        <path d="M10 3a7 7 0 0 0 0 14z" />
+      </svg>
+    </button>
+  </div>
+</header>
+
+<script>
+  // Theme toggle: follows the system until the visitor picks one, then remembers it.
+  const root = document.documentElement;
+  const button = document.querySelector<HTMLButtonElement>(".themeButton")!;
+  const dark = () => (root.dataset.theme ?? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) === "dark";
+  const sync = () => button.setAttribute("aria-pressed", String(dark()));
+  sync();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", sync);
+  button.addEventListener("click", () => {
+    const theme = dark() ? "light" : "dark";
+    root.dataset.theme = theme;
+    try {
+      localStorage.setItem("theme", theme);
+    } catch {}
+    sync();
+  });
+</script>
+
+<style>
+  .siteHeader {
+    border-bottom: 1px solid var(--rule);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 64px;
+  }
+  .name {
+    font-weight: 600;
+    font-size: 18px;
+    text-decoration: none;
+    margin-right: auto;
+    white-space: nowrap;
+  }
+  .nav {
+    align-items: center;
+    gap: 4px;
+    font-size: 16px;
+  }
+  .nav a,
+  .menuButton,
+  .themeButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0 10px;
+    border-radius: var(--radius);
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .nav a:hover {
+    text-decoration: underline;
+  }
+  .nav a[aria-current="page"] {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+  }
+  .langs {
+    display: inline-flex;
+    margin-left: 8px;
+  }
+  .langs a {
+    min-width: 36px;
+    padding: 0 6px;
+    color: var(--slate);
+  }
+  .langs a[aria-current] {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  button {
+    background: none;
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+  }
+  svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+  .themeButton svg path {
+    fill: currentColor;
+    stroke: none;
+  }
+  .menuButton {
+    display: none;
+  }
+
+  /* Wide screens: the nav is an ordinary row, whatever its popover state. */
+  @media (min-width: 600px) {
+    .nav[popover] {
+      position: static;
+      inset: auto;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: inherit;
+      overflow: visible;
+      display: flex;
+    }
+  }
+
+  /* Phones: one row with the name, the menu and the theme; the menu drops down under the header. */
+  @media (max-width: 599.98px) {
+    .menuButton {
+      display: inline-flex;
+    }
+    .nav:popover-open {
+      display: flex;
+      position: fixed;
+      inset: 64px var(--gutter) auto auto;
+      margin: 0;
+      flex-direction: column;
+      align-items: stretch;
+      min-width: 200px;
+      padding: 8px;
+      border: 1px solid var(--rule);
+      border-radius: var(--radius);
+      background: var(--paper);
+      color: var(--ink);
+    }
+    .nav:popover-open a {
+      justify-content: flex-start;
+    }
+    .nav:popover-open .langs {
+      margin: 4px 0 0;
+      border-top: 1px solid var(--rule);
+      padding-top: 4px;
+    }
+  }
+</style>

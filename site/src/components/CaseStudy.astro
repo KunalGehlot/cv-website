@@ -1,0 +1,272 @@
+---
+// A case study, in either language: title and lede, a facts column that stays in view (with a
+// strip of the roll showing where this sits in the career), then the sections.
+import { Image } from "astro:assets";
+import fallingNotes from "../assets/work/opentiles-falling-notes.png";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "./Header.astro";
+import Footer from "./Footer.astro";
+import { formatRange, t, toMonth, type Lang } from "../data/i18n";
+import { entry } from "../data/timeline";
+import { caseStudies, workBySlug } from "../data/work";
+import { firstYear, layoutRoll } from "../lib/roll";
+
+interface Props {
+  lang: Lang;
+  slug: string;
+}
+
+const { lang, slug } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const work = workBySlug(slug);
+const e = entry(work.entryId);
+const text = {
+  en: {
+    back: "Selected work",
+    when: "When",
+    next: "Next case study",
+    alt: "OpenTiles practising Ode to Joy: falling notes in two colours, one per hand, above a piano keyboard",
+    strip: "Where this sits in my career",
+  },
+  de: {
+    back: "Ausgewählte Arbeiten",
+    when: "Zeitraum",
+    next: "Nächste Fallstudie",
+    alt: "OpenTiles beim Üben der Ode an die Freude: fallende Noten in zwei Farben, eine pro Hand, über einer Klaviatur",
+    strip: "Wo das in meinem Werdegang liegt",
+  },
+}[lang];
+
+// The strip: every note of the roll, faint, on its hand's band, with this one drawn in full.
+const roll = layoutRoll(lang);
+const first = toMonth(`${firstYear}-01`);
+const at = (m: number) => Math.min(Math.max((m - first) / roll.months, 0), 1);
+const self = {
+  x: at(toMonth(e.start!)),
+  w: Math.max(at(e.end === "now" ? first + roll.months : toMonth(e.end!)) - at(toMonth(e.start!)), 0.008),
+};
+const band = (track: string) => ({ lead: 0, both: 1, eng: 2 })[track] ?? 1;
+
+const i = caseStudies.indexOf(work);
+const next = caseStudies[(i + 1) % caseStudies.length];
+---
+
+<BaseLayout title={`${t(work.title, lang)}, Kunal Gehlot`} lang={lang} description={t(work.lede!, lang)}>
+  <Header lang={lang} langLinks={{ en: `en/work/${slug}/`, de: `de/work/${slug}/` }} />
+  <main id="main" class="wrap case" data-track={work.track}>
+    <a class="back" href={`${base}${lang}/#work`}>{text.back}</a>
+    <h1>{t(work.title, lang)}</h1>
+    <p class="lede">{t(work.lede!, lang)}</p>
+
+    <div class="body">
+      <aside class="facts">
+        <figure class="strip" aria-label={text.strip}>
+          {roll.notes.map((n) => <span class="ghost" style={`--x:${n.x}; --w:${n.w}; --b:${band(n.track)}`} />)}
+          <span class="self" data-track={work.track} style={`--x:${self.x}; --w:${self.w}; --b:${band(work.track)}`} />
+          <span class="from">{firstYear}</span>
+        </figure>
+        <dl>
+          <dt>{text.when}</dt>
+          <dd>{formatRange(e.start!, e.end!, lang)}</dd>
+          {
+            work.facts!.map((f) => (
+              <>
+                <dt>{t(f.term, lang)}</dt>
+                <dd>{f.href ? <a href={f.href}>{t(f.value, lang)}</a> : t(f.value, lang)}</dd>
+              </>
+            ))
+          }
+        </dl>
+      </aside>
+
+      <div class="text">
+        {
+          slug === "opentiles" && (
+            <a class="shot" href="https://opentiles.site">
+              <Image src={fallingNotes} alt={text.alt} widths={[640, 960, 1280]} sizes="(min-width: 960px) 760px, 100vw" />
+            </a>
+          )
+        }
+        {
+          work.sections!.map((s) => (
+            <section>
+              <h2>{t(s.heading, lang)}</h2>
+              {s.paragraphs?.map((p) => <p>{t(p, lang)}</p>)}
+              {s.list && (
+                <ul>
+                  {s.list.map((item) => (
+                    <li>{t(item, lang)}</li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))
+        }
+        <a class="next" href={`${base}${lang}/work/${next.slug}/`} data-track={next.track}>
+          <span>{text.next}</span>
+          {t(next.title, lang)}
+        </a>
+      </div>
+    </div>
+  </main>
+  <Footer lang={lang} />
+</BaseLayout>
+
+<style>
+  [data-track="eng"] {
+    --hand: var(--hand-eng);
+  }
+  [data-track="lead"] {
+    --hand: var(--hand-lead);
+  }
+  [data-track="both"] {
+    --hand: var(--hand-lead);
+  }
+  .case {
+    padding-top: clamp(32px, 6vw, 72px);
+  }
+  .back {
+    display: inline-block;
+    margin-bottom: 24px;
+    color: var(--slate);
+    font-size: 16px;
+  }
+  .back::before {
+    content: "";
+    display: inline-block;
+    width: 18px;
+    height: 8px;
+    margin-right: 10px;
+    border-radius: 2px;
+    background: var(--hand);
+  }
+  h1 {
+    max-width: 18em;
+  }
+  .lede {
+    margin-top: 24px;
+    font-size: clamp(19px, 1.8vw, 23px);
+    line-height: 1.5;
+  }
+  .body {
+    display: grid;
+    gap: 40px;
+    margin-top: 56px;
+  }
+  @media (min-width: 960px) {
+    .body {
+      grid-template-columns: 4fr 8fr;
+      gap: 48px;
+      align-items: start;
+    }
+    .facts {
+      position: sticky;
+      top: 32px;
+    }
+  }
+
+  /* The career strip: three bands, leadership on top, engineering below. */
+  .strip {
+    position: relative;
+    height: 40px;
+    margin: 0 0 20px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .ghost,
+  .self {
+    position: absolute;
+    left: calc(var(--x) * 100%);
+    width: max(calc(var(--w) * 100%), 3px);
+    top: calc(var(--b) * 11px + 2px);
+    height: 7px;
+    border-radius: 2px;
+  }
+  .ghost {
+    background: var(--rule);
+  }
+  .self {
+    background: var(--hand);
+    height: 9px;
+    top: calc(var(--b) * 11px + 1px);
+  }
+  .self[data-track="both"] {
+    background: linear-gradient(to bottom, var(--hand-lead) 50%, var(--hand-eng) 50%);
+  }
+  .from {
+    position: absolute;
+    left: 0;
+    bottom: -22px;
+    font-size: 12px;
+    color: var(--slate);
+  }
+  dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 10px 16px;
+    margin: 32px 0 0;
+    font-size: 16px;
+  }
+  dt {
+    color: var(--slate);
+  }
+  dd {
+    margin: 0;
+  }
+
+  .shot {
+    display: block;
+    margin-bottom: 48px;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .text section + section {
+    margin-top: 48px;
+  }
+  .text h2 {
+    font-size: 28px;
+  }
+  .text p,
+  .text ul {
+    margin-top: 16px;
+  }
+  .text ul {
+    padding-left: 1.1em;
+    max-width: var(--measure);
+  }
+  .text li + li {
+    margin-top: 10px;
+  }
+  .text li::marker {
+    color: var(--hand);
+  }
+  .next {
+    display: block;
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 2px solid var(--hand);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(24px, 3vw, 36px);
+    line-height: 1.15;
+    text-decoration: none;
+  }
+  .next span {
+    display: block;
+    margin-bottom: 8px;
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--slate);
+  }
+  .next:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.15em;
+  }
+</style>

@@ -1,0 +1,1121 @@
+---
+// The career piano roll: the site's signature. Layout is computed at build time (lib/roll.ts). The
+// script plays it (a playhead draws the notes and strikes them on a small synthesised piano), lets
+// a mouse scrub through time, and adds the popovers on hover and focus and the arrow keys.
+import { formatMonth, formatRange, t, type Lang } from "../data/i18n";
+import { H_AFTER, H_PLOT, V_LINE, firstYear, layoutRoll, type Note } from "../lib/roll";
+
+interface Props {
+  lang: Lang;
+  /** Phones: the wide roll in a scrolling box (scroll), or notes falling toward "now" (vertical). */
+  mobile?: "vertical" | "scroll";
+}
+
+const { lang, mobile = "scroll" } = Astro.props;
+const roll = layoutRoll(lang);
+const base = import.meta.env.BASE_URL;
+
+const text = {
+  en: {
+    name: "My career, 2017 to today",
+    lead: "Innovation and leadership",
+    eng: "Engineering",
+    now: "now",
+    play: "Play",
+    stop: "Stop",
+    sound: "Sound",
+    work: "Read the case study",
+    story: "Read it in my story",
+    list: "The same, as a list",
+  },
+  de: {
+    name: "Mein Werdegang, 2017 bis heute",
+    lead: "Innovation und Führung",
+    eng: "Technik",
+    now: "heute",
+    play: "Abspielen",
+    stop: "Stopp",
+    sound: "Ton",
+    work: "Zur Fallstudie",
+    story: "Mehr in meiner Story",
+    list: "Dasselbe als Liste",
+  },
+}[lang];
+
+const trackName = (n: Note) => (n.track === "both" ? `${text.lead}, ${text.eng}` : text[n.track]);
+const linkOf = (n: Note) => {
+  const link = n.entry.link;
+  if (!link) return undefined;
+  return "work" in link
+    ? { href: `${base}${lang}/work/${link.work}/`, text: text.work }
+    : { href: `${base}${lang}/story/#${link.story}`, text: text.story };
+};
+const org = (n: Note) => [t(n.entry.org, lang), n.entry.place && t(n.entry.place, lang)].filter(Boolean).join(", ");
+const dates = (n: Note) => formatRange(n.entry.start!, n.entry.end!, lang);
+
+// Horizontal rows, top to bottom: leadership lanes (lane 0 nearest the middle), the middle row for
+// notes that belong to both hands, then the engineering lanes.
+const { lead, eng, both } = roll.lanes;
+const row = (n: Note) => (n.track === "lead" ? lead - 1 - n.lane : n.track === "both" ? lead : lead + both + n.lane);
+const rows = lead + both + eng;
+const rowTrack = (r: number) => (r < lead ? "lead" : r < lead + both ? "both" : "eng");
+// Black keys sit between the white ones as on a real keyboard, read from the top: B A G F E D C.
+const blackBelow = (r: number) => r < rows - 1 && [1, 1, 1, 0, 1, 1, 0][r % 7] === 1;
+const latest = roll.notes.reduce((a, b) => (b.x > a.x ? b : a));
+const noteData = (n: Note) => ({ "data-x": n.x.toFixed(5), "data-w": n.w.toFixed(5), "data-row": row(n) });
+---
+
+<figure
+  class="roll"
+  data-mobile={mobile}
+  data-first={firstYear}
+  data-months={roll.months.toFixed(2)}
+  data-rows={rows}
+  data-now={text.now}
+  aria-label={text.name}
+  style={`--rows:${rows}; --lead:${lead}; --eng:${eng}; --p:1; --c:1`}
+>
+  <div class="transport">
+    <button class="playBtn" type="button" data-play={text.play} data-stop={text.stop}>
+      <svg class="iconPlay" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 1l11 6-11 6z"></path></svg>
+      <svg class="iconStop" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2h10v10H2z"></path></svg>
+      <span>{text.play}</span>
+    </button>
+    <button class="soundBtn" type="button" aria-pressed="true" aria-label={text.sound}>
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <path class="speaker" d="M3 7h3l5-4v14l-5-4H3z"></path>
+        <path class="waves" d="M14 7a4 4 0 0 1 0 6M16 4.5a7.5 7.5 0 0 1 0 11"></path>
+        <path class="mute" d="M14 7l5 6M19 7l-5 6"></path>
+      </svg>
+    </button>
+    <p class="legend" aria-hidden="true">
+      <span data-track="lead">{text.lead}</span>
+      <span data-track="eng">{text.eng}</span>
+    </p>
+  </div>
+
+  <div class="h" style={`--plot:${H_PLOT}px; --after:${H_AFTER}px`}>
+    <div class="hInner">
+      <span class="track" data-track="lead" style={`--top:0; --span:${lead}`}>{text.lead}</span>
+      <span class="track" data-track="eng" style={`--top:${lead + both}; --span:${eng}`}>{text.eng}</span>
+      <div class="keys" aria-hidden="true">
+        {
+          Array.from({ length: rows }, (_, r) => (
+            <span class="key" data-row={r} data-track={rowTrack(r)} data-black={blackBelow(r) ? "" : undefined} />
+          ))
+        }
+      </div>
+      <div class="hPlot">
+        {
+          roll.years.map((y) => (
+            <span class="year" style={`--x:${y.x}`}>
+              <span>{y.year}</span>
+            </span>
+          ))
+        }
+        <span class="playhead"><span>{text.now}</span></span>
+        <span class="cursor" aria-hidden="true"><span class="readout"></span></span>
+        {
+          roll.notes.map((n) => (
+            <>
+              <button
+                class="note"
+                type="button"
+                data-order={n.order}
+                data-track={n.track}
+                data-label={n.hLabel}
+                data-ongoing={n.ongoing ? "" : undefined}
+                {...noteData(n)}
+                tabindex={n === latest ? 0 : -1}
+                popovertarget={`pop-h-${n.entry.id}`}
+                style={`--x:${n.x}; --w:${n.w}; --row:${row(n)}`}
+              >
+                <span class="label">{t(n.entry.label, lang)}</span>
+                <span class="sr-only">{`, ${t(n.entry.title, lang)}, ${dates(n)}`}</span>
+              </button>
+              <div class="pop" id={`pop-h-${n.entry.id}`} popover data-track={n.track}>
+                <p class="popTitle">{t(n.entry.title, lang)}</p>
+                <p class="popMeta">{org(n)}</p>
+                <p class="popMeta">
+                  {dates(n)} <span class="popTrack">{trackName(n)}</span>
+                </p>
+                <p>{t(n.entry.line, lang)}</p>
+                {
+                  n.entry.milestones && (
+                    <ul class="popSteps">
+                      {n.entry.milestones.map((m) => (
+                        <li>
+                          <span>{formatMonth(m.when, lang)}</span>
+                          {m.link ? <a href={`${base}${lang}/work/${m.link.work}/`}>{t(m.text, lang)}</a> : t(m.text, lang)}
+                        </li>
+                      ))}
+                    </ul>
+                  )
+                }
+                {linkOf(n) && <a href={linkOf(n)!.href}>{linkOf(n)!.text}</a>}
+              </div>
+            </>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="v" style={`--vh:${roll.vHeight}px; --line:${V_LINE}px`}>
+    <div class="vHead">
+      <span data-track="eng">{text.eng}</span>
+      <span data-track="lead">{text.lead}</span>
+    </div>
+    <div class="vPlot">
+      {
+        roll.years.map((y) => (
+          <span class="vYear" style={`--y:${y.x}`}>
+            <span>{y.year}</span>
+          </span>
+        ))
+      }
+      <span class="vNow"><span>{text.now}</span></span>
+      <span class="vCursor" aria-hidden="true"><span class="readout"></span></span>
+      {
+        roll.notes.map((n) => (
+          <>
+            <button
+              class="vNote"
+              type="button"
+              data-order={n.order}
+              data-track={n.track}
+              {...noteData(n)}
+              tabindex={n === latest ? 0 : -1}
+              popovertarget={`pop-v-${n.entry.id}`}
+              style={`--y:${n.x}; --len:${n.w}; --lane:${n.lane}; --ly:${n.vLabelY}px; --lines:${n.vLines}`}
+            >
+              <span class="label">{t(n.entry.label, lang)}</span>
+              <span class="sr-only">{`, ${t(n.entry.title, lang)}, ${dates(n)}`}</span>
+            </button>
+            <div class="pop" id={`pop-v-${n.entry.id}`} popover data-track={n.track}>
+              <p class="popTitle">{t(n.entry.title, lang)}</p>
+              <p class="popMeta">{org(n)}</p>
+              <p class="popMeta">
+                {dates(n)} <span class="popTrack">{trackName(n)}</span>
+              </p>
+              <p>{t(n.entry.line, lang)}</p>
+              {
+                n.entry.milestones && (
+                  <ul class="popSteps">
+                    {n.entry.milestones.map((m) => (
+                      <li>
+                        <span>{formatMonth(m.when, lang)}</span>
+                        {m.link ? <a href={`${base}${lang}/work/${m.link.work}/`}>{t(m.text, lang)}</a> : t(m.text, lang)}
+                      </li>
+                    ))}
+                  </ul>
+                )
+              }
+              {linkOf(n) && <a href={linkOf(n)!.href}>{linkOf(n)!.text}</a>}
+            </div>
+          </>
+        ))
+      }
+    </div>
+  </div>
+
+  <ol class="sr-only" aria-label={text.list}>
+    {
+      roll.notes.map((n) => (
+        <li>
+          {dates(n)}: {t(n.entry.title, lang)}, {org(n)} ({trackName(n)}). {t(n.entry.line, lang)}
+          {n.entry.milestones?.map((m) => ` ${formatMonth(m.when, lang)}: ${t(m.text, lang)}.`)}
+        </li>
+      ))
+    }
+  </ol>
+</figure>
+
+<script is:inline>
+  // On the first visit of a session the roll records itself once, silently. Hide the notes before
+  // the first paint so they can be drawn in; the script below starts the drawing.
+  (() => {
+    const roll = document.currentScript.previousElementSibling;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    try {
+      if (sessionStorage.getItem("roll-played")) return;
+      sessionStorage.setItem("roll-played", "1");
+    } catch {}
+    roll.classList.add("playing", "intro");
+    roll.style.setProperty("--p", "0");
+    // Never leave the notes hidden if the script doesn't run.
+    setTimeout(() => roll.classList.contains("intro") && roll.classList.remove("playing", "intro"), 6000);
+  })();
+</script>
+
+<script>
+  // Sound: a small piano made from oscillators, so nothing is downloaded. One bar per year, on the
+  // chords I–V–vi–IV in C; every note takes the chord of the year it starts in, its pitch rising with
+  // its row, so the left hand (engineering) sounds low and the right hand (leadership) high.
+  let audio: { ctx: AudioContext; out: GainNode } | undefined;
+  // Browsers only start sound inside a click, so Play calls this before anything is struck.
+  const unlock = () => {
+    if (!audio) {
+      const ctx = new AudioContext();
+      const out = ctx.createGain();
+      out.gain.value = 0.5;
+      out.connect(ctx.createDynamicsCompressor()).connect(ctx.destination);
+      audio = { ctx, out };
+    }
+    if (audio.ctx.state !== "running") audio.ctx.resume();
+    return audio;
+  };
+  const strike = (midi: number, velocity: number) => {
+    const { ctx, out } = unlock();
+    const at = ctx.currentTime + 0.01;
+    const f = 440 * 2 ** ((midi - 69) / 12);
+    const tone = ctx.createBiquadFilter();
+    tone.frequency.setValueAtTime(Math.min(f * 7, 9000), at);
+    tone.frequency.exponentialRampToValueAtTime(Math.max(f * 1.5, 300), at + 1.6);
+    const env = ctx.createGain();
+    env.gain.setValueAtTime(0.0001, at);
+    env.gain.exponentialRampToValueAtTime(velocity, at + 0.006);
+    env.gain.exponentialRampToValueAtTime(0.0001, at + 2.6);
+    tone.connect(env).connect(out);
+    for (const [type, partial, level] of [["triangle", 1, 1], ["sine", 2, 0.35], ["sine", 3, 0.1]] as const) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.value = f * partial;
+      gain.gain.value = level;
+      osc.connect(gain).connect(tone);
+      osc.start(at);
+      osc.stop(at + 2.7);
+    }
+  };
+  const chords = [[0, 4, 7], [7, 11, 2], [9, 0, 4], [5, 9, 0]];
+  const roots = [36, 43, 45, 41];
+  const pitch = (fromBottom: number, chord: number[]) => {
+    let midi = 52 + 5 * fromBottom;
+    while (!chord.includes(midi % 12)) midi++;
+    return midi;
+  };
+
+  let soundOn = true;
+  try {
+    soundOn = localStorage.getItem("roll-sound") !== "off";
+  } catch {}
+  const calm = matchMedia("(prefers-reduced-motion: reduce)");
+
+  for (const roll of document.querySelectorAll<HTMLElement>(".roll")) {
+    const months = Number(roll.dataset.months);
+    const first = Number(roll.dataset.first);
+    const rows = Number(roll.dataset.rows);
+    const monthName = new Intl.DateTimeFormat(document.documentElement.lang, { month: "short", year: "numeric" });
+    const playBtn = roll.querySelector<HTMLButtonElement>(".playBtn")!;
+    const soundBtn = roll.querySelector<HTMLButtonElement>(".soundBtn")!;
+    const readouts = roll.querySelectorAll<HTMLElement>(".readout");
+    const keys = [...roll.querySelectorAll<HTMLElement>(".key")];
+    const scroller = roll.querySelector<HTMLElement>(".h")!;
+    const plot = roll.querySelector<HTMLElement>(".hPlot")!;
+
+    // Each note as music: both views' buttons, where it starts and ends (fractions of the axis) and its pitch.
+    const music = [...roll.querySelectorAll<HTMLButtonElement>(".note")].map((el) => {
+      const x = Number(el.dataset.x);
+      const end = x + Number(el.dataset.w);
+      const fromBottom = rows - 1 - Number(el.dataset.row);
+      const bar = Math.floor((x * months) / 12);
+      return {
+        els: roll.querySelectorAll<HTMLButtonElement>(`[data-order="${el.dataset.order}"]`),
+        x,
+        end,
+        row: Number(el.dataset.row),
+        fromBottom,
+        midi: pitch(fromBottom, chords[bar % 4]),
+      };
+    });
+    const sounding = (at: number) => music.filter((m) => m.x <= at && (at < m.end || m.end >= 0.9999));
+
+    const setKeys = (at: number | undefined) => {
+      const down = new Set(at === undefined ? [] : sounding(at).map((m) => m.row));
+      keys.forEach((key, r) => key.classList.toggle("down", down.has(r)));
+    };
+    const setReadout = (at: number) => {
+      const label = at >= 0.9999 ? roll.dataset.now! : monthName.format(new Date(first, Math.floor(at * months)));
+      for (const r of readouts) r.textContent = label;
+    };
+
+    soundBtn.setAttribute("aria-pressed", String(soundOn));
+    soundBtn.addEventListener("click", () => {
+      soundOn = !soundOn;
+      for (const b of document.querySelectorAll(".soundBtn")) b.setAttribute("aria-pressed", String(soundOn));
+      try {
+        localStorage.setItem("roll-sound", soundOn ? "on" : "off");
+      } catch {}
+    });
+
+    // ---- Playing: the playhead sweeps from 2017 to now, one bar per year. ----
+    let raf = 0;
+    let done = 0;
+    // The silent first-visit drawing leaves the button on Play, so a click then starts the real thing.
+    const setPlaying = (on: boolean, button = on) => {
+      roll.classList.toggle("playing", on);
+      playBtn.classList.toggle("on", button);
+      playBtn.querySelector("span")!.textContent = button ? playBtn.dataset.stop! : playBtn.dataset.play!;
+    };
+    const stop = () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(done);
+      roll.classList.remove("intro", "calm");
+      roll.style.setProperty("--p", "1");
+      roll.style.setProperty("--c", "1");
+      for (const m of music) m.els.forEach((el) => el.classList.remove("struck"));
+      setPlaying(false);
+      setKeys(undefined);
+    };
+    const play = (duration: number, withSound: boolean, intro = false) => {
+      stop();
+      roll.classList.toggle("calm", calm.matches);
+      setPlaying(true, !intro);
+      const pending = [...music].sort((a, b) => a.x - b.x);
+      let bar = -1;
+      const start = performance.now();
+      const frame = (now: number) => {
+        const p = Math.min((now - start) / duration, 1);
+        roll.style.setProperty("--p", p.toFixed(4));
+        roll.style.setProperty("--c", p.toFixed(4));
+        const thisBar = Math.floor((p * months) / 12);
+        if (thisBar !== bar && p < 1) {
+          bar = thisBar;
+          if (withSound) {
+            strike(roots[bar % 4], 0.22);
+            // Whatever is still sounding is struck again softly, in this year's chord.
+            for (const m of sounding(p)) if (m.x * months < bar * 12) strike(pitch(m.fromBottom, chords[bar % 4]), 0.07);
+          }
+        }
+        while (pending.length && pending[0].x <= p) {
+          const m = pending.shift()!;
+          m.els.forEach((el) => el.classList.add("struck"));
+          if (withSound) strike(m.midi, 0.3);
+        }
+        setKeys(p);
+        setReadout(p);
+        if (scroller.scrollWidth > scroller.clientWidth) {
+          scroller.scrollLeft = plot.offsetLeft + p * plot.offsetWidth - scroller.clientWidth * 0.6;
+        }
+        if (p < 1) {
+          raf = requestAnimationFrame(frame);
+          return;
+        }
+        // At "now", everything still going on rings out as a C major chord.
+        if (withSound) {
+          strike(36, 0.25);
+          strike(48, 0.15);
+          for (const m of sounding(1)) strike(pitch(m.fromBottom, chords[0]), 0.22);
+        }
+        done = window.setTimeout(stop, 1400);
+      };
+      raf = requestAnimationFrame(frame);
+    };
+
+    playBtn.addEventListener("click", () => {
+      if (playBtn.classList.contains("on")) return stop();
+      if (soundOn) unlock();
+      play(Math.round((months / 12) * 850), soundOn);
+    });
+    document.addEventListener("visibilitychange", () => document.hidden && playBtn.classList.contains("on") && stop());
+
+    // The first visit's silent drawing, once the roll is in view (the inline script set it up).
+    if (roll.classList.contains("intro")) {
+      new IntersectionObserver((entries, observer) => {
+        if (!entries[0].isIntersecting) return;
+        observer.disconnect();
+        play(2600, false, true);
+      }, { threshold: 0.35 }).observe(roll);
+    }
+
+    // ---- Scrubbing: with a mouse, the roll shows what was going on at the pointer. ----
+    plot.addEventListener("pointermove", (e) => {
+      if (e.pointerType !== "mouse" || roll.classList.contains("playing")) return;
+      const r = plot.getBoundingClientRect();
+      const at = Math.min(Math.max((e.clientX - r.left) / r.width, 0), 1);
+      roll.classList.add("scrubbing");
+      roll.style.setProperty("--c", at.toFixed(4));
+      const on = new Set(sounding(at));
+      for (const m of music) m.els.forEach((el) => el.classList.toggle("on", on.has(m)));
+      setKeys(at);
+      setReadout(at);
+    });
+    plot.addEventListener("pointerleave", () => {
+      if (!roll.classList.contains("scrubbing")) return;
+      roll.classList.remove("scrubbing");
+      roll.style.setProperty("--c", "1");
+      for (const m of music) m.els.forEach((el) => el.classList.remove("on"));
+      setKeys(undefined);
+    });
+
+    // Once the roll has been played with sound, the notes and keys sound when touched.
+    for (const m of music) {
+      m.els[0].addEventListener("pointerenter", (e) => {
+        if (audio && soundOn && e.pointerType === "mouse" && !roll.classList.contains("playing")) strike(m.midi, 0.12);
+      });
+    }
+    keys.forEach((key, r) =>
+      key.addEventListener("pointerdown", () => {
+        if (!soundOn) return;
+        unlock();
+        strike(pitch(rows - 1 - r, chords[0]), 0.25);
+        key.classList.add("down");
+        setTimeout(() => key.classList.remove("down"), 220);
+      }),
+    );
+  }
+
+  // ---- Popovers on hover and keyboard focus, and the arrow keys. Tapping a note opens its popover
+  // without any of this (popovertarget). ----
+  const visible = (el: Element) => (el as HTMLElement).offsetParent !== null;
+
+  for (const roll of document.querySelectorAll<HTMLElement>(".roll")) {
+    const notes = () =>
+      [...roll.querySelectorAll<HTMLButtonElement>(".note, .vNote")]
+        .filter(visible)
+        .sort((a, b) => Number(a.dataset.order) - Number(b.dataset.order));
+    const popOf = (note: HTMLButtonElement) => document.getElementById(note.getAttribute("popovertarget")!)!;
+
+    const place = (note: HTMLButtonElement, pop: HTMLElement) => {
+      const r = note.getBoundingClientRect();
+      const p = pop.getBoundingClientRect();
+      const margin = 8;
+      let top = r.top - p.height - margin;
+      if (top < margin) top = r.bottom + margin;
+      const left = Math.min(Math.max(r.left + Math.min(r.width, 40) / 2 - 24, margin), innerWidth - p.width - margin);
+      pop.style.top = `${Math.round(top)}px`;
+      pop.style.left = `${Math.round(left)}px`;
+    };
+
+    let hideTimer = 0;
+    const show = (note: HTMLButtonElement) => {
+      clearTimeout(hideTimer);
+      const pop = popOf(note);
+      if (!pop.matches(":popover-open")) pop.showPopover();
+      place(note, pop);
+    };
+    const hideSoon = (note: HTMLButtonElement) => {
+      const pop = popOf(note);
+      hideTimer = window.setTimeout(() => {
+        if (!pop.matches(":hover, :focus-within") && document.activeElement !== note && pop.matches(":popover-open")) pop.hidePopover();
+      }, 200);
+    };
+
+    for (const note of roll.querySelectorAll<HTMLButtonElement>(".note, .vNote")) {
+      const pop = popOf(note);
+      pop.addEventListener("toggle", (e) => {
+        if ((e as ToggleEvent).newState === "open") place(note, pop);
+      });
+      pop.addEventListener("pointerleave", () => hideSoon(note));
+      note.addEventListener("pointerenter", (e) => e.pointerType === "mouse" && !roll.classList.contains("playing") && show(note));
+      note.addEventListener("pointerleave", (e) => e.pointerType === "mouse" && hideSoon(note));
+      note.addEventListener("focus", () => note.matches(":focus-visible") && show(note));
+      note.addEventListener("blur", () => hideSoon(note));
+      // Once hover or focus has opened the popover, a click keeps it open instead of toggling it shut.
+      note.addEventListener("click", (e) => {
+        if (pop.matches(":popover-open") && (note.matches(":hover") || note.matches(":focus-visible"))) e.preventDefault();
+      });
+      note.addEventListener("keydown", (e) => {
+        const list = notes();
+        const i = list.indexOf(note);
+        const next = { ArrowRight: i + 1, ArrowDown: i + 1, ArrowLeft: i - 1, ArrowUp: i - 1, Home: 0, End: list.length - 1 }[e.key];
+        if (next === undefined || !list[next]) return;
+        e.preventDefault();
+        for (const n of list) n.tabIndex = -1;
+        list[next].tabIndex = 0;
+        list[next].focus();
+      });
+    }
+
+    // On a narrow screen the wide roll scrolls in its own box; start it at "now".
+    const scroller = roll.querySelector<HTMLElement>(".h");
+    if (scroller && scroller.scrollWidth > scroller.clientWidth) scroller.scrollLeft = scroller.scrollWidth;
+  }
+</script>
+
+<style>
+  .roll {
+    position: relative;
+    margin: 0;
+    --pitch: 32px;
+    --noteH: 24px;
+    --headroom: 26px;
+    --trackW: 112px;
+    --keysW: 64px;
+    --keyWhite: #ffffff;
+    --keyBlack: #13201c;
+    --keyEdge: rgba(19, 32, 28, 0.07);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .roll {
+      --keyWhite: #b8c3bf;
+      --keyBlack: #070b0a;
+      --keyEdge: rgba(0, 0, 0, 0.18);
+    }
+  }
+  :root[data-theme="dark"] .roll {
+    --keyWhite: #b8c3bf;
+    --keyBlack: #070b0a;
+    --keyEdge: rgba(0, 0, 0, 0.18);
+  }
+
+  /* ---- Transport ---- */
+  .transport {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 10px;
+    margin-bottom: 16px;
+  }
+  /* Where the roll is wide enough, the transport sits in its top-left corner, which stays empty:
+     nothing on the roll starts before autumn 2019, and no label may go there (lib/roll.ts). */
+  @media (min-width: 1280px) {
+    .transport {
+      position: absolute;
+      z-index: 4;
+      top: calc(var(--headroom) + 4px);
+      left: calc(var(--trackW) + var(--keysW) + 16px);
+      margin: 0;
+    }
+  }
+  .playBtn,
+  .soundBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    border-radius: var(--radius);
+    font: inherit;
+    cursor: pointer;
+  }
+  .playBtn {
+    gap: 10px;
+    min-width: 128px;
+    padding: 0 18px 0 16px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .playBtn:hover {
+    background: transparent;
+    color: var(--ink);
+  }
+  .playBtn svg {
+    width: 13px;
+    height: 13px;
+    fill: currentColor;
+  }
+  .playBtn .iconStop,
+  .playBtn.on .iconPlay {
+    display: none;
+  }
+  .playBtn.on .iconStop {
+    display: block;
+  }
+  .soundBtn {
+    width: 44px;
+    padding: 0;
+    border: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ink);
+  }
+  .soundBtn:hover {
+    border-color: var(--ink);
+  }
+  .soundBtn svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .soundBtn .speaker {
+    fill: currentColor;
+  }
+  .soundBtn .mute,
+  .soundBtn[aria-pressed="false"] .waves {
+    display: none;
+  }
+  .soundBtn[aria-pressed="false"] .mute {
+    display: inline;
+  }
+
+  /* Notes and their labels, shared by both views. */
+  .note,
+  .vNote {
+    position: absolute;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius);
+    font: inherit;
+    color: var(--paper);
+    cursor: pointer;
+    transition: opacity 140ms;
+  }
+  [data-track="eng"] {
+    --hand: var(--hand-eng);
+  }
+  [data-track="lead"] {
+    --hand: var(--hand-lead);
+  }
+  .note,
+  .vNote,
+  .key.down {
+    background: var(--hand);
+  }
+  .note[data-track="both"],
+  .key.down[data-track="both"] {
+    background: linear-gradient(to bottom, var(--hand-lead) 50%, var(--hand-eng) 50%);
+  }
+  .vNote[data-track="both"] {
+    background: linear-gradient(to right, var(--hand-eng) 50%, var(--hand-lead) 50%);
+  }
+  .note:focus-visible,
+  .vNote:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+  .label {
+    position: absolute;
+    text-align: left;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: var(--noteH);
+  }
+
+  /* ---- Horizontal roll: wide screens, and phones in "scroll" mode. ---- */
+  .h {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+  .hInner {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--trackW) var(--keysW) minmax(var(--plot), 1fr);
+    padding-right: var(--after);
+    min-width: calc(var(--trackW) + var(--keysW) + var(--plot) + var(--after));
+  }
+  .track {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    margin-top: calc(var(--headroom) + var(--top) * var(--pitch));
+    height: calc(var(--span) * var(--pitch));
+    display: flex;
+    align-items: center;
+    padding-right: 14px;
+    font-size: 14px;
+    line-height: 1.25;
+    color: var(--slate);
+    /* When the roll scrolls in its box, the track names and the keys stay in view. */
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: var(--paper);
+  }
+  .track::after {
+    content: "";
+    position: absolute;
+    right: 6px;
+    top: 4px;
+    bottom: 4px;
+    width: 3px;
+    border-radius: 2px;
+    background: var(--hand);
+  }
+
+  /* The keyboard: one key per row, pressed while a note in its row sounds. */
+  .keys {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+    margin-top: var(--headroom);
+    position: sticky;
+    left: var(--trackW);
+    z-index: 2;
+    background: var(--paper);
+    padding-right: 6px;
+  }
+  .key {
+    position: relative;
+    display: block;
+    height: var(--pitch);
+    background: var(--keyWhite);
+    border: 1px solid var(--rule);
+    border-left: 0;
+    border-radius: 0 5px 5px 0;
+    box-shadow: inset -5px 0 0 var(--keyEdge);
+    transition: background 90ms, transform 90ms;
+    transform-origin: left;
+    cursor: pointer;
+  }
+  .key + .key {
+    margin-top: -1px;
+  }
+  .key[data-black]::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    width: 60%;
+    height: 19px;
+    border-radius: 0 3px 3px 0;
+    background: var(--keyBlack);
+    box-shadow: inset -3px 0 0 rgba(255, 255, 255, 0.14);
+    z-index: 1;
+  }
+  .key.down {
+    transform: scaleX(0.94);
+  }
+
+  .hPlot {
+    grid-column: 3;
+    grid-row: 1;
+    position: relative;
+    height: calc(var(--headroom) + var(--rows) * var(--pitch) + 28px);
+  }
+  .year {
+    position: absolute;
+    left: calc(var(--x) * 100%);
+    top: var(--headroom);
+    bottom: 0;
+    border-left: 1px solid var(--rule);
+  }
+  .year span {
+    position: absolute;
+    bottom: 0;
+    left: 4px;
+    font-size: 13px;
+    color: var(--slate);
+    font-variant-numeric: tabular-nums;
+  }
+  .playhead,
+  .cursor {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    bottom: 22px;
+    border-left: 2px solid var(--ink);
+    pointer-events: none;
+  }
+  .playhead span,
+  .cursor span {
+    position: absolute;
+    top: 0;
+    left: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .cursor {
+    display: none;
+    left: calc(var(--c) * 100%);
+    z-index: 3;
+  }
+  .playing .cursor,
+  .scrubbing .cursor {
+    display: block;
+  }
+  .scrubbing .cursor {
+    border-left: 1px solid var(--slate);
+  }
+  .scrubbing .cursor span {
+    color: var(--slate);
+  }
+  .playing .playhead,
+  .playing .vNow {
+    visibility: hidden;
+  }
+  .note {
+    left: calc(var(--x) * 100%);
+    /* Back-to-back notes keep a hairline gap, like separately struck keys. */
+    width: max(calc(var(--w) * 100% - 2px), 6px);
+    top: calc(var(--headroom) + var(--row) * var(--pitch) + (var(--pitch) - var(--noteH)) / 2);
+    height: var(--noteH);
+  }
+  .note .label {
+    top: 0;
+  }
+  .note[data-label="inside"] .label {
+    left: 8px;
+  }
+  /* What is still going on is named at its "now" end, where the eye already is. */
+  .note[data-label="inside"][data-ongoing] .label {
+    left: auto;
+    right: 8px;
+  }
+  .note[data-label="right"] .label,
+  .note[data-label="after"] .label {
+    left: calc(100% + 6px);
+    color: var(--ink);
+  }
+  .note[data-label="left"] .label {
+    right: calc(100% + 6px);
+    color: var(--ink);
+  }
+  .note[data-label="none"] .label {
+    clip-path: inset(50%);
+  }
+
+  /* Playing: each note is drawn as the playhead passes it, and flares when it is struck. Its
+     label beside it appears once the note is complete. */
+  .playing:not(.calm) .note {
+    --fill: clamp(0, (var(--p) - var(--x)) / var(--w), 1);
+    --whole: clamp(0, (var(--fill) - 0.999) * 1000, 1);
+    clip-path: inset(-8px calc((1 - var(--fill)) * 100% + 1px - var(--whole) * 400px) -8px -400px);
+  }
+  .playing:not(.calm) :is(.note, .vNote):not(.struck) .label {
+    visibility: hidden;
+  }
+  .playing:not(.calm) .vNote {
+    --fill: clamp(0, (var(--p) - var(--y)) / var(--len), 1);
+    --whole: clamp(0, (var(--fill) - 0.999) * 1000, 1);
+    clip-path: inset(-400px -400px calc((1 - var(--fill)) * 100% + 1px - var(--whole) * 2000px) -400px);
+  }
+  @keyframes strike {
+    from {
+      filter: brightness(1.7) saturate(1.3);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--hand, var(--hand-lead)) 35%, transparent);
+    }
+  }
+  .struck {
+    animation: strike 700ms ease-out;
+  }
+  .calm .struck {
+    animation: none;
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  /* Scrubbing: what isn't going on at the pointer steps back. */
+  .scrubbing .note:not(.on) {
+    opacity: 0.25;
+  }
+
+  /* ---- Vertical roll (phones): notes fall toward "now" at the bottom. ---- */
+  .v {
+    display: none;
+    container-type: inline-size;
+    --yearsW: 36px;
+    --center: calc(var(--yearsW) + (100cqw - var(--yearsW)) / 2);
+    --bar: 10px;
+    --step: 14px;
+  }
+  .vHead {
+    display: grid;
+    grid-template-columns: var(--yearsW) 1fr 1fr;
+    font-size: 13px;
+    line-height: 1.25;
+    color: var(--slate);
+    margin-bottom: 12px;
+  }
+  .vHead span {
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--hand);
+  }
+  .vHead [data-track="eng"] {
+    grid-column: 2;
+    text-align: right;
+    padding-right: 8px;
+  }
+  .vHead [data-track="lead"] {
+    grid-column: 3;
+    padding-left: 8px;
+  }
+  .vPlot {
+    position: relative;
+    height: calc(var(--vh) + 8px);
+  }
+  .vYear {
+    position: absolute;
+    top: calc(var(--y) * var(--vh));
+    left: 0;
+    right: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .vYear span {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    font-size: 12px;
+    color: var(--slate);
+    font-variant-numeric: tabular-nums;
+  }
+  .vNow,
+  .vCursor {
+    position: absolute;
+    top: var(--vh);
+    left: 0;
+    right: 0;
+    border-top: 2px solid var(--ink);
+  }
+  .vCursor {
+    display: none;
+    top: calc(var(--c) * var(--vh));
+    z-index: 3;
+  }
+  .playing .vCursor {
+    display: block;
+  }
+  .vNow span,
+  .vCursor span {
+    position: absolute;
+    top: 4px;
+    left: 0;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .vNote {
+    top: calc(var(--y) * var(--vh));
+    height: max(calc(var(--len) * var(--vh) - 2px), 6px);
+    width: var(--bar);
+    border-radius: 3px;
+  }
+  .vNote[data-track="eng"] {
+    left: calc(var(--center) - 6px - var(--lane) * var(--step) - var(--bar));
+  }
+  .vNote[data-track="lead"] {
+    left: calc(var(--center) + 6px + var(--lane) * var(--step));
+  }
+  .vNote[data-track="both"] {
+    left: calc(var(--center) - 6px);
+    width: 12px;
+  }
+  .vNote .label {
+    top: calc(var(--ly) - var(--y) * var(--vh));
+    font-size: 12px;
+    line-height: var(--line);
+    white-space: normal;
+    color: var(--ink);
+  }
+  /* Label columns: from the years to the outermost engineering lane, and from the outermost
+     leadership lane to the edge. Offsets are relative to the note the label belongs to.
+     Engineering labels sit left of their lanes, right-aligned; the others sit right of theirs. */
+  .vNote[data-track="eng"] .label {
+    text-align: right;
+    right: calc((var(--eng) - 1 - var(--lane)) * var(--step) + var(--bar) + 6px);
+    width: calc(var(--center) - 12px - (var(--eng) - 1) * var(--step) - var(--bar) - var(--yearsW) - 4px);
+  }
+  .vNote[data-track="lead"] .label,
+  .vNote[data-track="both"] .label {
+    left: calc((var(--lead) - 1 - var(--lane)) * var(--step) + var(--bar) + 6px);
+    width: calc(100cqw - var(--center) - 12px - (var(--lead) - 1) * var(--step) - var(--bar));
+  }
+  .vNote[data-track="both"] .label {
+    left: calc(12px + (var(--lead) - 1) * var(--step) + var(--bar) + 6px);
+  }
+
+  .legend {
+    display: none;
+    gap: 4px 16px;
+    flex-wrap: wrap;
+    margin: 0;
+    font-size: 14px;
+    color: var(--slate);
+  }
+  .legend span::before {
+    content: "";
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    vertical-align: -1px;
+    border-radius: 3px;
+    background: var(--hand);
+  }
+
+  @media (max-width: 767.98px) {
+    .roll[data-mobile="scroll"] {
+      --trackW: 0px;
+      --keysW: 40px;
+    }
+    /* Phones keep only room for "now" after the playhead: the ongoing notes are named inside. */
+    .roll[data-mobile="scroll"] .h {
+      --after: 44px !important;
+    }
+    .roll[data-mobile="scroll"] .legend {
+      display: flex;
+      flex-basis: 100%;
+    }
+    .roll[data-mobile="scroll"] .track {
+      visibility: hidden;
+    }
+    .roll[data-mobile="vertical"] .h {
+      display: none;
+    }
+    .roll[data-mobile="vertical"] .v {
+      display: block;
+    }
+  }
+
+  /* ---- Pop-overs ---- */
+  .pop {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    width: min(320px, calc(100vw - 16px));
+    padding: 12px 14px;
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--hand, var(--ink));
+    border-radius: var(--radius);
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.45;
+  }
+  .pop[data-track="both"] {
+    border-left-color: var(--hand-lead);
+  }
+  .pop[data-track="both"] .popTrack::before {
+    background: linear-gradient(to bottom, var(--hand-lead) 50%, var(--hand-eng) 50%);
+  }
+  .pop p + p {
+    margin-top: 4px;
+  }
+  .popTitle {
+    font-weight: 600;
+  }
+  .popMeta {
+    color: var(--slate);
+    font-size: 14px;
+  }
+  .popTrack::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin: 0 6px 1px 8px;
+    border-radius: 2px;
+    background: var(--hand, var(--ink));
+  }
+  .popSteps {
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .popSteps li {
+    display: grid;
+    grid-template-columns: 4.5em 1fr;
+    gap: 8px;
+    padding: 4px 0;
+    border-top: 1px solid var(--rule);
+  }
+  .popSteps span {
+    color: var(--slate);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  .pop > a {
+    display: inline-block;
+    margin-top: 8px;
+    font-weight: 500;
+  }
+</style>

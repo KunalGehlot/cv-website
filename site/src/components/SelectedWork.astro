@@ -1,0 +1,252 @@
+---
+// Selected work: OpenTiles large, then the others as rows. Each row carries a small note in its
+// hand's colour, the same mark as on the roll.
+import { Image } from "astro:assets";
+import fallingNotes from "../assets/work/opentiles-falling-notes.png";
+import { formatYears, t, type Lang } from "../data/i18n";
+import { entry } from "../data/timeline";
+import { opentiles, work, workBySlug, type Work } from "../data/work";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const text = {
+  en: {
+    heading: "Selected work",
+    body: "Falling notes or sheet music, a MIDI keyboard or an acoustic piano through the microphone, and feedback on every note. I wrote the specification and the plan, directed an LLM through the build and reviewed every change. Built mostly in October 2026.",
+    alt: "OpenTiles practising Ode to Joy: falling notes in two colours, one per hand, above a piano keyboard",
+    open: "Open OpenTiles",
+    caseStudy: "Read the case study",
+    source: "Source on GitHub",
+    status: "Status",
+    statusValue: "Pre-release, live at opentiles.site",
+    checks: "Checks",
+    checksValue: "Lint, type checks, unit tests and end-to-end tests in Chromium, Firefox and WebKit on every change",
+  },
+  de: {
+    heading: "Ausgewählte Arbeiten",
+    body: "Fallende Noten oder Notenblatt, ein MIDI-Keyboard oder ein akustisches Klavier über das Mikrofon, und Rückmeldung zu jeder Note. Ich habe die Spezifikation und den Plan geschrieben, ein LLM durch die Entwicklung geführt und jede Änderung geprüft. Entstanden größtenteils im Oktober 2026.",
+    alt: "OpenTiles beim Üben der Ode an die Freude: fallende Noten in zwei Farben, eine pro Hand, über einer Klaviatur",
+    open: "OpenTiles öffnen",
+    caseStudy: "Zur Fallstudie",
+    source: "Quellcode auf GitHub",
+    status: "Status",
+    statusValue: "Vorabversion, live auf opentiles.site",
+    checks: "Prüfungen",
+    checksValue: "Linting, Typprüfung, Unit-Tests und End-to-End-Tests in Chromium, Firefox und WebKit bei jeder Änderung",
+  },
+}[lang];
+
+const featured = workBySlug("opentiles");
+const rows = work.filter((w) => w !== featured);
+const years = (w: Work) => {
+  const e = entry(w.entryId);
+  return e.start && e.end ? formatYears(e.start, e.end, lang) : undefined;
+};
+const hrefOf = (w: Work) => (w.sections ? `${base}${lang}/work/${w.slug}/` : `${base}${lang}/story/#${w.story}`);
+const facts = [
+  ...featured.facts!.filter((f) => ["Stack", "Size"].includes(t(f.term, "en"))),
+  { term: { en: text.checks, de: text.checks }, value: text.checksValue },
+  { term: { en: text.status, de: text.status }, value: text.statusValue },
+];
+---
+
+<section class="block wrap" id="work" aria-labelledby="work-title">
+  <h2 id="work-title">{text.heading}</h2>
+
+  <article class="featured">
+    <a class="shot" href={opentiles.url}>
+      <Image src={fallingNotes} alt={text.alt} widths={[640, 960, 1280]} sizes="(min-width: 960px) 640px, 100vw" />
+    </a>
+    <div class="featuredText">
+      <h3><span class="mark" data-track="eng" aria-hidden="true"></span>{t(featured.title, lang)}</h3>
+      <p class="summary">{t(featured.summary, lang)}</p>
+      <p>{text.body}</p>
+      <dl>
+        {
+          facts.map((f) => (
+            <>
+              <dt>{t(f.term, lang)}</dt>
+              <dd>{t(f.value, lang)}</dd>
+            </>
+          ))
+        }
+      </dl>
+      <p class="links">
+        <a class="action primary" href={opentiles.url}>{text.open}</a>
+        <a class="action" href={`${base}${lang}/work/opentiles/`}>{text.caseStudy}</a>
+        <a class="plain" href={opentiles.repo}>{text.source}</a>
+      </p>
+    </div>
+  </article>
+
+  <ul class="rows">
+    {
+      rows.map((w) => (
+        <li>
+          <a class="row" href={hrefOf(w)}>
+            <span class="mark" data-track={w.track} aria-hidden="true" />
+            <span class="rowTitle">{t(w.title, lang)}</span>
+            <span class="rowYears">{years(w)}</span>
+            <span class="rowSummary">{t(w.summary, lang)}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .featured {
+    display: grid;
+    gap: 32px;
+    margin-top: 40px;
+  }
+  @media (min-width: 960px) {
+    .featured {
+      grid-template-columns: 7fr 5fr;
+      gap: 48px;
+      align-items: start;
+    }
+  }
+  .shot {
+    display: block;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #fff;
+  }
+  .shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: transform 400ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .shot:hover img {
+    transform: scale(1.02);
+  }
+  h3 {
+    font-size: clamp(28px, 3vw, 36px);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .summary {
+    margin-top: 12px;
+    font-size: 21px;
+    line-height: 1.4;
+  }
+  .featuredText > p + p {
+    margin-top: 12px;
+  }
+  dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 8px 16px;
+    margin: 24px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-size: 16px;
+  }
+  dt {
+    color: var(--slate);
+  }
+  dd {
+    margin: 0;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 16px;
+    margin-top: 24px;
+  }
+  .plain {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  /* A note in the hand's colour, as on the roll. It holds longer when its row is pointed at. */
+  .mark {
+    flex: none;
+    display: inline-block;
+    width: 28px;
+    height: 12px;
+    border-radius: 3px;
+    background: var(--hand);
+    transition: width 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .mark[data-track="eng"] {
+    --hand: var(--hand-eng);
+  }
+  .mark[data-track="lead"] {
+    --hand: var(--hand-lead);
+  }
+  .mark[data-track="both"] {
+    background: linear-gradient(to bottom, var(--hand-lead) 50%, var(--hand-eng) 50%);
+  }
+
+  .rows {
+    margin: 56px 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--rule);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 4px 16px;
+    align-items: baseline;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--rule);
+    text-decoration: none;
+  }
+  .row .mark {
+    align-self: center;
+    grid-row: span 2;
+  }
+  .row:hover .mark,
+  .row:focus-visible .mark {
+    width: 52px;
+  }
+  .rowTitle {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 21px;
+    line-height: 1.25;
+  }
+  .row:hover .rowTitle {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  .rowYears {
+    color: var(--slate);
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .rowSummary {
+    grid-column: 2 / -1;
+    color: var(--slate);
+    font-size: 16px;
+    max-width: var(--measure);
+  }
+  @media (max-width: 599.98px) {
+    .row {
+      grid-template-columns: 40px 1fr;
+    }
+    .row .mark {
+      width: 24px;
+      grid-row: span 3;
+      align-self: start;
+      margin-top: 8px;
+    }
+    .rowYears {
+      grid-column: 2;
+    }
+  }
+</style>

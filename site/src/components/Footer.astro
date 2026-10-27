@@ -1,0 +1,52 @@
+---
+import { profile } from "../data/profile";
+import type { Lang } from "../data/i18n";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const text = {
+  en: { source: "Source code", legal: "Impressum (German)", privacy: "Datenschutz (German)" },
+  de: { source: "Quellcode", legal: "Impressum", privacy: "Datenschutz" },
+}[lang];
+---
+
+<footer class="siteFooter">
+  <div class="wrap row">
+    <span>© {new Date().getFullYear()} {profile.name}</span>
+    <nav aria-label={lang === "de" ? "Rechtliches und Links" : "Legal and links"}>
+      <a href={`${base}impressum/`} hreflang="de">{text.legal}</a>
+      <a href={`${base}datenschutz/`} hreflang="de">{text.privacy}</a>
+      <a href={profile.github.url}>GitHub</a>
+      <a href={`${profile.github.url}/cv-website`}>{text.source}</a>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .siteFooter {
+    margin-top: 96px;
+    border-top: 1px solid var(--rule);
+    font-size: 14px;
+    color: var(--slate);
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 24px;
+    padding-top: 24px;
+    padding-bottom: 32px;
+  }
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+  }
+  a {
+    color: inherit;
+  }
+</style>

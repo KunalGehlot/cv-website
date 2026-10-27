@@ -1,0 +1,107 @@
+---
+import "@fontsource/ibm-plex-sans/latin-400.css";
+import "@fontsource/ibm-plex-sans/latin-ext-400.css";
+import "@fontsource/ibm-plex-sans/latin-500.css";
+import "@fontsource/ibm-plex-sans/latin-ext-500.css";
+import "@fontsource/ibm-plex-sans/latin-600.css";
+import "@fontsource/ibm-plex-sans/latin-ext-600.css";
+import "@fontsource/ibm-plex-sans-condensed/latin-600.css";
+import "@fontsource/ibm-plex-sans-condensed/latin-ext-600.css";
+import displayFont from "@fontsource/ibm-plex-sans-condensed/files/ibm-plex-sans-condensed-latin-600-normal.woff2?url";
+import "../styles/global.css";
+import { profile } from "../data/profile";
+import type { Lang } from "../data/i18n";
+import { personLd } from "../lib/person";
+
+interface Props {
+  title: string;
+  lang: Lang;
+  description?: string;
+  /** Adds the JSON-LD `Person`: on its own (the home pages), or as the subject of a profile page (the CV). */
+  person?: boolean | "profile";
+}
+
+const { title, lang, description, person = false } = Astro.props;
+const descriptions: Record<Lang, string> = {
+  en: "Software engineer with an MBA in Digitalization and Industrial Change from RWTH Aachen. I harness AI to how a company really works: its processes, its people and its code.",
+  de: "Softwareentwickler mit einem MBA in Digitalization and Industrial Change der RWTH Aachen. Ich passe KI an die Art an, wie ein Unternehmen wirklich arbeitet: an seine Prozesse, seine Menschen und seinen Code.",
+};
+const metaDescription = description ?? descriptions[lang];
+
+const base = import.meta.env.BASE_URL;
+const path = Astro.url.pathname;
+const toUrl = (p: string) => new URL(p, Astro.site).toString();
+const canonical = toUrl(path);
+// Pages under /en/ and /de/ pair up by swapping the prefix; the legal pages have no counterpart.
+const localised = /^\/(en|de)\//.test(path.slice(base.length - 1));
+const altEn = toUrl(path.replace(/\/de\//, "/en/"));
+const altDe = toUrl(path.replace(/\/en\//, "/de/"));
+const skipText = lang === "de" ? "Zum Inhalt springen" : "Skip to content";
+// The share image (public/img/og/): the name, the headline and the career roll from the home page.
+const ogAlt: Record<Lang, string> = {
+  en: "Kunal Gehlot: I harness AI to how a company really works. His career from 2017 to today as a piano roll.",
+  de: "Kunal Gehlot: Ich passe KI an die Art an, wie ein Unternehmen wirklich arbeitet. Sein Werdegang von 2017 bis heute als Pianorolle.",
+};
+
+const ld = personLd(lang, descriptions[lang]);
+const structured =
+  person === "profile"
+    ? { "@context": "https://schema.org", "@type": "ProfilePage", url: canonical, mainEntity: ld }
+    : { "@context": "https://schema.org", ...ld };
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={metaDescription} />
+    <meta name="author" content={profile.name} />
+    <link rel="canonical" href={canonical} />
+    {
+      localised && (
+        <>
+          <link rel="alternate" hreflang="en" href={altEn} />
+          <link rel="alternate" hreflang="de" href={altDe} />
+          <link rel="alternate" hreflang="x-default" href={altEn} />
+        </>
+      )
+    }
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={lang === "de" ? "de_DE" : "en_US"} />
+    <meta property="og:site_name" content={profile.name} />
+    <meta property="og:image" content={toUrl(`${base}img/og/og-${lang}.png`)} />
+    <meta property="og:image:width" content="2400" />
+    <meta property="og:image:height" content="1260" />
+    <meta property="og:image:alt" content={ogAlt[lang]} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#f6f7f5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f1714" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <link rel="sitemap" href={`${base}sitemap-index.xml`} />
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
+    <script is:inline>
+      // Apply a saved theme before the first paint, so the page never flashes the wrong one.
+      try {
+        const theme = localStorage.getItem("theme");
+        if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+      } catch {}
+    </script>
+    {person && <script type="application/ld+json" set:html={JSON.stringify(structured)} />}
+  </head>
+  <body>
+    <a class="skip" href="#main">{skipText}</a>
+    <slot />
+    <script>
+      // Disable context menu, text selection, and copying
+      const suppress = (event: Event) => event.preventDefault();
+      document.addEventListener("contextmenu", suppress);
+      document.addEventListener("selectstart", suppress);
+      document.addEventListener("copy", suppress);
+    </script>
+  </body>
+</html>

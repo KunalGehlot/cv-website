@@ -1,0 +1,60 @@
+---
+// The home page, in either language. The pages under en/ and de/ only pick the language.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "./Header.astro";
+import Hero from "./Hero.astro";
+import SelectedWork from "./SelectedWork.astro";
+import Process from "./Process.astro";
+import EntryList from "./EntryList.astro";
+import Skills from "./Skills.astro";
+import Books from "./Books.astro";
+import Contact from "./Contact.astro";
+import Footer from "./Footer.astro";
+import type { Lang } from "../data/i18n";
+import { dated } from "../data/timeline";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const text = {
+  en: {
+    title: "Kunal Gehlot: software engineering, AI and digital transformation",
+    experience: "Experience",
+    education: "Education",
+    leadership: "Leadership and volunteering",
+    zab: "Verification (PDF)",
+  },
+  de: {
+    title: "Kunal Gehlot: Softwareentwicklung, KI und digitale Transformation",
+    experience: "Berufserfahrung",
+    education: "Ausbildung",
+    leadership: "Engagement und Führung",
+    zab: "Bescheinigung (PDF)",
+  },
+}[lang];
+---
+
+<BaseLayout title={text.title} lang={lang} person>
+  <Header lang={lang} />
+  <main id="main">
+    <Hero lang={lang} />
+    <SelectedWork lang={lang} />
+    <Process lang={lang} />
+    <EntryList lang={lang} id="experience" heading={text.experience} entries={dated("work")} />
+    <EntryList
+      lang={lang}
+      id="education"
+      heading={text.education}
+      entries={dated("education")}
+      extra={{ zab: { href: `${base}cv/zab.pdf`, text: text.zab } }}
+    />
+    <EntryList lang={lang} id="leadership" heading={text.leadership} entries={dated("volunteer")} compact />
+    <Skills lang={lang} />
+    <Books lang={lang} />
+    <Contact lang={lang} />
+  </main>
+  <Footer lang={lang} />
+</BaseLayout>

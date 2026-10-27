@@ -1,0 +1,28 @@
+# build output
+dist/
+# the CV PDFs are rendered from src/data (pnpm cv); only zab.pdf is a source file
+public/cv/cv-*.pdf
+# private CV variants, never deployed
+private/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/

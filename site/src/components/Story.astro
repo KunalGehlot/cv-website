@@ -1,0 +1,279 @@
+---
+// The story page, in either language. On wide screens the chapter list stays beside the text, each
+// chapter a note in its hand's colour, and the chapter being read lights up as on the roll.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "./Header.astro";
+import Footer from "./Footer.astro";
+import { t, type Lang } from "../data/i18n";
+import { chapters } from "../data/story";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const text = {
+  en: {
+    title: "My story, Kunal Gehlot",
+    h1: "My story",
+    intro: "I build future-ready products and organizations, where engineering, management, and entrepreneurial thinking meet.",
+    contact: "Get in touch",
+    home: "Back to the start",
+    chapters: "Chapters",
+    caseStudy: "Read the case study",
+  },
+  de: {
+    title: "Meine Story, Kunal Gehlot",
+    h1: "Meine Story",
+    intro: "Ich gestalte zukunftsfähige Produkte und Organisationen, dort, wo Softwareentwicklung, Management und unternehmerisches Denken zusammenkommen.",
+    contact: "Kontakt aufnehmen",
+    home: "Zur Startseite",
+    chapters: "Kapitel",
+    caseStudy: "Zur Fallstudie",
+  },
+}[lang];
+---
+
+<BaseLayout title={text.title} lang={lang}>
+  <Header lang={lang} langLinks={{ en: "en/story/", de: "de/story/" }} />
+  <main id="main" class="wrap story">
+    <h1>{text.h1}</h1>
+    <p class="intro">{text.intro}</p>
+
+    <figure class="quote">
+      <blockquote lang="en">There is nothing so useless as doing efficiently that which should not be done at all.</blockquote>
+      <figcaption>Peter F. Drucker</figcaption>
+    </figure>
+
+    <p class="actions">
+      <a class="action primary" href={`${base}${lang}/#contact`}>{text.contact}</a>
+      <a class="action" href={`${base}${lang}/`}>{text.home}</a>
+    </p>
+
+    <div class="body">
+      <nav class="toc" aria-label={text.chapters}>
+        <ol>
+          {
+            chapters.map((c) => (
+              <li data-track={c.track}>
+                <a href={`#${c.id}`} data-chapter={c.id}>
+                  {t(c.title, lang)}
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+
+      <div class="chapters">
+        {
+          chapters.map((c) => (
+            <section class="chapter" id={c.id} data-track={c.track} aria-labelledby={`${c.id}-title`}>
+              <h2 id={`${c.id}-title`}>{t(c.title, lang)}</h2>
+              {c.location && (
+                <p class="where">
+                  <a href={t(c.location.href, lang)}>{t(c.location.label, lang)}</a>
+                </p>
+              )}
+              {c.body.map((p) => (
+                <p>{t(p, lang)}</p>
+              ))}
+              {c.milestones && (
+                <ul class="milestones">
+                  {c.milestones.map((m) => (
+                    <li>{t(m, lang)}</li>
+                  ))}
+                </ul>
+              )}
+              {c.work && (
+                <a class="more" href={`${base}${lang}/work/${c.work}/`}>
+                  {text.caseStudy}
+                </a>
+              )}
+            </section>
+          ))
+        }
+      </div>
+    </div>
+  </main>
+  <Footer lang={lang} />
+</BaseLayout>
+
+<script>
+  // Light the chapter being read in the chapter list.
+  const links = new Map([...document.querySelectorAll<HTMLAnchorElement>(".toc a")].map((a) => [a.dataset.chapter, a]));
+  const visible = new Set<string>();
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) e.isIntersecting ? visible.add(e.target.id) : visible.delete(e.target.id);
+      const current = [...links.keys()].find((id) => visible.has(id!));
+      for (const [id, a] of links) {
+        if (id === current) a.setAttribute("aria-current", "location");
+        else a.removeAttribute("aria-current");
+      }
+    },
+    { rootMargin: "-30% 0px -55% 0px" },
+  );
+  for (const chapter of document.querySelectorAll(".chapter")) observer.observe(chapter);
+</script>
+
+<style>
+  [data-track="eng"] {
+    --hand: var(--hand-eng);
+  }
+  [data-track="lead"] {
+    --hand: var(--hand-lead);
+  }
+  [data-track="both"] {
+    --hand: linear-gradient(to bottom, var(--hand-lead) 50%, var(--hand-eng) 50%);
+  }
+  .story {
+    padding-top: clamp(40px, 7vw, 96px);
+  }
+  .intro {
+    margin-top: 24px;
+    font-size: clamp(19px, 1.8vw, 23px);
+    line-height: 1.5;
+  }
+  .quote {
+    margin: 48px 0 0;
+    padding-left: 24px;
+    border-left: 4px solid var(--hand-lead);
+    max-width: 40em;
+  }
+  blockquote {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(24px, 3vw, 36px);
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+  .quote figcaption {
+    margin-top: 12px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 40px;
+  }
+
+  .body {
+    margin-top: clamp(64px, 9vw, 112px);
+  }
+  .toc {
+    display: none;
+  }
+  @media (min-width: 960px) {
+    .body {
+      display: grid;
+      grid-template-columns: 4fr 8fr;
+      gap: 48px;
+      align-items: start;
+    }
+    .toc {
+      display: block;
+      position: sticky;
+      top: 32px;
+    }
+  }
+  .toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .toc a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 0;
+    color: var(--slate);
+    font-size: 15px;
+    text-decoration: none;
+  }
+  .toc a::before {
+    content: "";
+    flex: none;
+    width: 14px;
+    height: 8px;
+    border-radius: 2px;
+    background: var(--hand);
+    opacity: 0.45;
+    transition: width 220ms cubic-bezier(0.2, 0.7, 0.2, 1), opacity 220ms;
+  }
+  .toc a:hover {
+    color: var(--ink);
+  }
+  .toc a[aria-current] {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .toc a[aria-current]::before {
+    width: 32px;
+    opacity: 1;
+  }
+
+  .chapter {
+    padding-bottom: 56px;
+    scroll-margin-top: 32px;
+  }
+  .chapter + .chapter {
+    padding-top: 56px;
+    border-top: 1px solid var(--rule);
+  }
+  .chapter h2 {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .chapter h2::before {
+    content: "";
+    flex: none;
+    width: 28px;
+    height: 12px;
+    border-radius: 3px;
+    background: var(--hand);
+  }
+  .where {
+    margin-top: 8px;
+    color: var(--slate);
+    font-size: 16px;
+  }
+  .chapter > p:not(.where) {
+    margin-top: 16px;
+  }
+  .milestones {
+    margin: 24px 0 0;
+    padding: 16px 0 0;
+    list-style: none;
+    border-top: 1px dashed var(--rule);
+    color: var(--slate);
+    font-size: 16px;
+  }
+  .milestones li {
+    position: relative;
+    padding-left: 20px;
+  }
+  .milestones li + li {
+    margin-top: 6px;
+  }
+  .milestones li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.6em;
+    width: 8px;
+    height: 4px;
+    border-radius: 1px;
+    background: var(--hand);
+  }
+  .more {
+    display: inline-block;
+    margin-top: 20px;
+    font-weight: 500;
+  }
+</style>
